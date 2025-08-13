@@ -1,0 +1,13 @@
+<menus>
+    <menu id="MainMenu">
+        <menu-item id="refresh_config" label="Refresh Config" />
+        <menu-item id="clear_cache" label="Clear Cache" />
+        <menu-item id="settings" label="@Strings.Settings" />
+    </menu>
+    
+    <menu id="SettingsMenu">
+        <menu-item id="config_url" label="@Strings.ConfigUrl" />
+        <menu-item id="api_key" label="@Strings.ApiKey" />
+        <menu-item id="ha_url" label="@Strings.HaUrl" />
+    </menu>
+</menus>

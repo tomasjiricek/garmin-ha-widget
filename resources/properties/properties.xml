@@ -1,0 +1,5 @@
+<properties>
+    <property id="ConfigUrl" type="string"></property>
+    <property id="ApiKey" type="string"></property>
+    <property id="HaUrl" type="string"></property>
+</properties>

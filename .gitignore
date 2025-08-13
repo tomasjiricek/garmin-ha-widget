@@ -1,0 +1,57 @@
+# Log files
+*.log
+*.log.*
+logs/
+*.out
+*.err
+
+# Garmin Connect IQ specific logs
+simulator.log
+connectiq.log
+monkeyc.log
+
+# Build artifacts
+bin/gen/
+bin/internal-mir/
+bin/external-mir/
+*.prg
+*.iq
+*.debug.xml
+
+# Developer keys (security)
+developer_key.der
+developer_key.pem
+*.p12
+*.jks
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
