@@ -1,0 +1,5 @@
+<shape xmlns:iq="http://www.garmin.com/xml/connectiq" id="LauncherIcon">
+    <rectangle width="60" height="60" />
+    <stroke color="Gfx.COLOR_WHITE" width="2" />
+    <fill color="Gfx.COLOR_BLUE" />
+</shape>
