@@ -1,0 +1,4 @@
+project.manifest = manifest.xml
+
+base.resourcePath = $(base.resourcePath);resources
+base.sourcePath = $(base.sourcePath);source

@@ -1,0 +1,13 @@
+{
+  "sequences": [
+    {
+      "id": "test_sequence", 
+      "timeout": 2000,
+      "sequence": ["UP", "OK"],
+      "action": {
+        "entity": "light.living_room",
+        "action": "light.toggle"
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+<resources>
+    <string id="AppName">HA Widget</string>
+    <string id="ConfigLoading">Loading...</string>
+    <string id="ConfigError">Config Error</string>
+    <string id="Ready">Ready</string>
+    <string id="SequenceInProgress">Sequence...</string>
+    <string id="ActionSent">Action Sent</string>
+    <string id="Settings">Settings</string>
+    <string id="ConfigUrl">Config URL</string>
+    <string id="ApiKey">API Key</string>
+    <string id="HaUrl">HA Server URL</string>
+    <string id="Refreshing">Refreshing...</string>
+    <string id="CacheCleared">Cache Cleared</string>
+    <string id="RefreshFailed">Refresh Failed</string>
+</resources>

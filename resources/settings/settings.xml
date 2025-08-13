@@ -1,0 +1,11 @@
+<settings>
+    <setting propertyKey="@Properties.ConfigUrl" title="@Strings.ConfigUrl">
+        <settingConfig type="alphaNumeric" required="false" />
+    </setting>
+    <setting propertyKey="@Properties.ApiKey" title="@Strings.ApiKey">
+        <settingConfig type="alphaNumeric" required="false" />
+    </setting>
+    <setting propertyKey="@Properties.HaUrl" title="@Strings.HaUrl">
+        <settingConfig type="alphaNumeric" required="false" />
+    </setting>
+</settings>
