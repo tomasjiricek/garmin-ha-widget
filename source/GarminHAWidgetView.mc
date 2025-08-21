@@ -173,45 +173,18 @@ class GarminHAWidgetView extends WatchUi.View {
         }
     }
 
-    function refreshConfig() as Void {
+    function clearCache() as Void {
         if (!_isActive || _configManager == null) { return; }
         
-        _statusText = "Refreshing...";
-        requestUpdateIfActive();
-        _configManager.refreshConfig(method(:onConfigRefreshed));
-    }
-
-    function onConfigRefreshed(success as Lang.Boolean) as Void {
-        if (!_isActive) { return; }
-        
-        if (success) {
-            _statusText = "Config Updated";
-            if (_keySequenceHandler != null && _configManager != null) {
-                _keySequenceHandler.setSequences(_configManager.getSequences());
-            }
-        } else {
-            _statusText = "Refresh Failed";
-        }
-        requestUpdateIfActive();
-        
-        // Reset status after 3 seconds
-        var timer = new Timer.Timer();
-        timer.start(method(:resetStatus), 3000, false);
-    }
-
-    function clearCache() as Void {
-        if (_configManager == null) { return; }
-        
         _configManager.clearCache();
-        _statusText = "Cache Cleared";
+        _statusText = "Reloading...";
         if (_keySequenceHandler != null) {
             _keySequenceHandler.setSequences([]);
         }
         requestUpdateIfActive();
         
-        // Reset status after 3 seconds
-        var timer = new Timer.Timer();
-        timer.start(method(:resetStatus), 3000, false);
+        // Force load fresh config
+        _configManager.refreshConfig(method(:onConfigLoaded));
     }
 
     function getKeySequenceHandler() as KeySequenceHandler? {
@@ -292,10 +265,7 @@ class GarminHAWidgetMenuDelegate extends WatchUi.MenuInputDelegate {
     }
 
     function onMenuItem(item) as Void {
-        if (item == :refresh_config) {
-            _view.refreshConfig();
-            WatchUi.popView(WatchUi.SLIDE_DOWN);
-        } else if (item == :clear_cache) {
+        if (item == :clear_cache) {
             _view.clearCache();
             WatchUi.popView(WatchUi.SLIDE_DOWN);
         } else if (item == :settings) {

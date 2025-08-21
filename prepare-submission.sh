@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Garmin Connect IQ Store Deployment Script
-# Prepares your Home Assistant Widget for Connect IQ Store submission
+# Garmin Connect IQ Store Submission Preparation Script
+# Prepares and validates files for Connect IQ Store submission
 
 set -e
 
-echo "🚀 GARMIN CONNECT IQ STORE DEPLOYMENT"
-echo "====================================="
+echo "📦 GARMIN CONNECT IQ STORE SUBMISSION PREP"
+echo "==========================================="
 
 # Configuration
 WIDGET_NAME="Home Assistant Widget"
@@ -80,10 +80,7 @@ print_step "Checking required documentation..."
 
 REQUIRED_FILES=(
     "STORE-DESCRIPTION.md"
-    "PRIVACY-POLICY.md" 
-    "RELEASE-NOTES.md"
-    "example-config.json"
-    "README.md"
+    "PRIVACY-POLICY.md"
 )
 
 for file in "${REQUIRED_FILES[@]}"; do
@@ -178,9 +175,6 @@ cp "$PACKAGE_FILE" "$SUBMISSION_DIR/"
 cp "$ICON_FILE" "$SUBMISSION_DIR/"
 cp "STORE-DESCRIPTION.md" "$SUBMISSION_DIR/"
 cp "PRIVACY-POLICY.md" "$SUBMISSION_DIR/"
-cp "RELEASE-NOTES.md" "$SUBMISSION_DIR/"
-cp "example-config.json" "$SUBMISSION_DIR/"
-cp "README.md" "$SUBMISSION_DIR/"
 
 # Create submission checklist
 cat > "$SUBMISSION_DIR/SUBMISSION-CHECKLIST.txt" << 'EOF'
@@ -228,9 +222,9 @@ else
 fi
 
 echo ""
-echo "🎉 ${GREEN}READY FOR CONNECT IQ STORE SUBMISSION!${NC}"
+echo "🎉 ${GREEN}SUBMISSION PACKAGE READY!${NC}"
 echo ""
-echo "📁 All files prepared in: $SUBMISSION_DIR/"
-echo "🌐 Submit at: https://developer.garmin.com/connect-iq/publish/"
+echo "📁 Files prepared in: $SUBMISSION_DIR/"
+echo "🌐 Manual upload required at: https://developer.garmin.com/connect-iq/publish/"
 echo ""
-echo "Good luck! 🚀"
+echo "Next: Follow the submission steps above to upload manually. 🚀"

@@ -15,10 +15,10 @@ This guide explains the battery-saving optimizations implemented in the Garmin H
 - Skips unnecessary graphics operations
 
 ### 3. **Efficient Networking**
-- Extended cache duration (1 hour vs 5 minutes)
-- Automatic cache expiration prevents unnecessary downloads
+- Persistent cache (never expires automatically)
+- Manual cache control via menu options
 - Connection: close headers to reduce network overhead
-- Reduced HTTP request frequency
+- Reduced HTTP request frequency (only when manually refreshed)
 
 ### 4. **Timer Optimization**
 - Increased minimum timeout from user config (1 second minimum)
@@ -83,7 +83,7 @@ This guide explains the battery-saving optimizations implemented in the Garmin H
 | Feature | Before Optimization | After Optimization | Battery Improvement |
 |---------|-------------------|------------------|-------------------|
 | Continuous Updates | Every 1 second | Only when needed | ~80% reduction |
-| Network Requests | Every 5 minutes | Every 1 hour | ~92% reduction |
+| Network Requests | Every 5 minutes | Manual refresh only | ~98% reduction |
 | Timer Usage | Multiple overlapping | Single, optimized | ~60% reduction |
 | Graphics Rendering | Full redraw always | Incremental updates | ~50% reduction |
 | Idle Processing | Continuous | Zero when hidden | ~95% reduction |
@@ -147,8 +147,9 @@ For critical battery situations, use minimal sequences:
 ### Troubleshooting Battery Issues
 
 1. **Clear Cache**: Menu → Clear Cache
-   - Removes potentially corrupted cached data
-   - Forces fresh config download
+   - Clears cached data and immediately reloads fresh config
+   - Single action for complete refresh
+   - Most reliable reset option
 
 2. **Check Config URL**: Ensure it's fast and reliable
    - Slow servers cause longer network operations
