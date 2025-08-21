@@ -154,7 +154,7 @@ This widget is engineered for **maximum battery efficiency**:
 - **`build.sh`** - Build the widget package
 - **`test.sh`** - Run comprehensive tests and validation
 - **`validate-config.py`** - Configuration validator with battery tips
-- **`prepare-submission.sh`** - Prepare files for Connect IQ Store submission
+- **`STORE-SUBMISSION.md`** - Connect IQ Store submission guide
 - **`BATTERY-OPTIMIZATION.md`** - Detailed battery optimization guide
 
 ## 📊 Battery Performance
@@ -184,10 +184,16 @@ This widget is engineered for **maximum battery efficiency**:
 Ready to submit to the Garmin Connect IQ Store:
 
 ```bash
-./prepare-submission.sh
+# For Connect IQ Store submission
+# See STORE-SUBMISSION.md for detailed steps
 ```
 
-This creates a `connect-iq-submission/` folder with all required files for manual upload to: https://developer.garmin.com/connect-iq/publish/
+Upload the widget package `garmin-ha-widget.iq` directly to: https://developer.garmin.com/connect-iq/publish/
+
+Use the documentation files in the project root:
+- `STORE-DESCRIPTION.md` for store listing
+- `PRIVACY-POLICY.md` for privacy policy  
+- `resources/drawables/launcher_icon.png` for app icon
 
 ## 🎉 Ready for Production
 

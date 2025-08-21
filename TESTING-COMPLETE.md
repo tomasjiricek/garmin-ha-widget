@@ -48,7 +48,7 @@ Tested and compatible with:
 ## 🚀 Ready for Connect IQ Store
 
 ### Upload Files
-1. **Main Package**: `garmin-ha-widget.iq` (421KB)
+1. **Main Package**: `garmin-ha-widget.iq` (429KB)
 2. **App Icon**: `resources/drawables/launcher_icon.png` (80x80)
 3. **Description**: Use content from `STORE-DESCRIPTION.md`
 4. **Privacy Policy**: Use content from `PRIVACY-POLICY.md`
