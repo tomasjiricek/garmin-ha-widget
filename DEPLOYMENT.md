@@ -26,7 +26,8 @@ chmod +x build.sh
 The build script will:
 - Check for SDK installation
 - Generate a developer key if needed
-- Compile the widget to `bin/garmin-ha-widget.iq`
+- Compile the widget to `dist/garmin-ha-widget.iq`
+- Copy distribution files (README, Privacy Policy, icon) to dist folder
 
 ## Step 2a: Test the Widget (Optional)
 
@@ -63,7 +64,7 @@ Example minimal config:
 
 ### Method A: Direct Copy
 1. Connect watch to computer via USB
-2. Copy `garmin-ha-widget.iq` to `GARMIN/Apps/` folder on watch
+2. Copy `dist/garmin-ha-widget.iq` to `GARMIN/Apps/` folder on watch
 3. Safely eject watch
 
 ### Method B: Garmin Express

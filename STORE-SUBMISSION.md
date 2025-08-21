@@ -13,7 +13,7 @@ export PATH=$PATH:/path/to/connectiq-sdk-linux/bin
 ```bash
 cd /path/to/garmin-ha-widget
 ./build.sh
-# This creates: bin/garmin-ha-widget.iq
+# This creates: dist/garmin-ha-widget.iq
 ```
 
 ### 3. Test Thoroughly
@@ -42,7 +42,7 @@ cd /path/to/garmin-ha-widget
 - **Long Description**: [See STORE-DESCRIPTION.md]
 
 #### Technical Details
-- **Package File**: Upload `garmin-ha-widget.iq`
+- **Package File**: Upload `dist/garmin-ha-widget.iq`
 - **Min SDK Version**: 3.0.0
 - **Supported Devices**: 
   - Fenix 6, 6S, 6X Pro

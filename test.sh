@@ -9,7 +9,7 @@ echo "🧪 GARMIN HA WIDGET TESTS"
 echo "========================="
 
 # Check if widget package exists
-PACKAGE_FILE="bin/garmin-ha-widget.iq"
+PACKAGE_FILE="dist/garmin-ha-widget.iq"
 if [ ! -f "$PACKAGE_FILE" ]; then
     echo "❌ Package file not found: $PACKAGE_FILE"
     echo "💡 Run ./build-and-test.sh first to build the widget"
@@ -54,7 +54,7 @@ echo ""
 
 # Test 4: Battery configuration test
 echo "🔋 Test 4: Battery configuration..."
-if python3 test-widget.py test-battery-config.json > /dev/null 2>&1; then
+if python3 test-widget.py tests/test-battery-config.json > /dev/null 2>&1; then
     echo "✅ Battery configuration: PASSED"
 else
     echo "❌ Battery configuration: FAILED"
@@ -69,7 +69,7 @@ echo "==============="
 echo "✅ Configuration validation: PASSED"
 echo "✅ Widget functionality: PASSED"
 echo "✅ Widget core tests: PASSED"
-echo "✅ Battery configuration: $(python3 test-widget.py test-battery-config.json > /dev/null 2>&1 && echo "PASSED" || echo "FAILED")"
+echo "✅ Battery configuration: $(python3 test-widget.py tests/test-battery-config.json > /dev/null 2>&1 && echo "PASSED" || echo "FAILED")"
 echo ""
 echo "🎉 ALL TESTS COMPLETED!"
 echo ""

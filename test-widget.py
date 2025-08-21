@@ -70,7 +70,7 @@ def test_build_artifacts():
     print("🧪 Testing build artifacts...")
     
     required_files = [
-        'bin/garmin-ha-widget.iq',
+        'dist/garmin-ha-widget.iq',
         'resources/drawables/launcher_icon.png',
         'manifest.xml'
     ]
@@ -85,7 +85,7 @@ def test_build_artifacts():
         return False
     
     # Check file sizes
-    iq_size = os.path.getsize('bin/garmin-ha-widget.iq')
+    iq_size = os.path.getsize('dist/garmin-ha-widget.iq')
     if iq_size < 1000:  # Should be at least 1KB
         print(f"❌ Widget package too small: {iq_size} bytes")
         return False
