@@ -93,20 +93,19 @@ This widget is engineered for **maximum battery efficiency**:
 ## 📱 Usage
 
 ### Widget Menu (Press MENU button)
-- **Refresh Config**: Download latest configuration from remote URL
-- **Clear Cache**: Reset cached data (useful for troubleshooting)
+- **Clear Cache**: Clear cache and reload fresh configuration from remote URL
 - **Settings**: Access Connect IQ configuration
 
 ### Smart Behaviors
-- **Automatic Caching**: Config cached for 1 hour, reduces network usage
+- **Persistent Caching**: Config cached forever until manually refreshed
 - **Offline Mode**: Falls back to cached config if network fails
 - **Auto HA URL**: Derives `https://yourdomain.com` from config URL automatically
 - **Battery Aware**: Only processes when widget is visible
 
 ### Configuration Management
 - First load downloads from remote URL
-- Subsequent loads use fast cached version
-- Manual refresh available via menu
+- Subsequent loads use cached version indefinitely
+- Manual refresh available via "Clear Cache" menu option
 - Cache survives watch restarts
 
 ## 🔧 Advanced Configuration

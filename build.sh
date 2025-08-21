@@ -1,67 +1,59 @@
 #!/bin/bash
 
-# Garmin Connect IQ Widget Build Script
+# Garmin HA Widget Build Script
+# Builds widget and prepares it for local testing
 
-# Set variables
-WIDGET_NAME="garmin-ha-widget"
-OUTPUT_DIR="bin"
-DEVELOPER_KEY="developer_key.der"
+set -e
 
-# Create output directory if it doesn't exist
-mkdir -p $OUTPUT_DIR
+echo "🔨 GARMIN HA WIDGET BUILD"
+echo "========================="
 
-# Check if Connect IQ SDK is available
-# First check if it's already in PATH
-if command -v monkeyc &> /dev/null; then
-    echo "Connect IQ SDK found in PATH"
-# Check common installation locations
-elif [ -d "$HOME/.Garmin/ConnectIQ/Sdks" ]; then
-    # Find the latest SDK version dynamically
-    SDK_PATH=$(find "$HOME/.Garmin/ConnectIQ/Sdks" -name "connectiq-sdk-*" -type d | sort -V | tail -1)
-    if [ -n "$SDK_PATH" ] && [ -d "$SDK_PATH/bin" ]; then
-        export PATH="$SDK_PATH/bin:$PATH"
-        echo "Using Connect IQ SDK: $SDK_PATH"
-    else
-        echo "Error: Connect IQ SDK found but bin directory missing"
-        exit 1
-    fi
-else
-    echo "Error: Garmin Connect IQ SDK not found. Please install it first."
-    echo "Download from: https://developer.garmin.com/connect-iq/sdk/"
+# Step 1: Build the widget
+echo "📦 Building widget..."
+if ! ./build.sh; then
+    echo "❌ Build failed!"
     exit 1
 fi
 
-# Check if developer key exists
-if [ ! -f "$DEVELOPER_KEY" ]; then
-    echo "Warning: Developer key not found. Creating a dummy key for testing."
-    echo "For production, generate a real key using: openssl genrsa -out developer_key.pem 4096"
-    echo "Then convert to DER format: openssl pkcs8 -topk8 -inform PEM -outform DER -in developer_key.pem -out developer_key.der -nocrypt"
-    
-    # Create a dummy key for development
-    openssl genrsa -out developer_key.pem 4096 2>/dev/null
-    openssl pkcs8 -topk8 -inform PEM -outform DER -in developer_key.pem -out developer_key.der -nocrypt 2>/dev/null
-    rm developer_key.pem
-fi
+echo "✅ Build completed successfully"
 
-# Build the widget
-echo "Building $WIDGET_NAME..."
-monkeyc -e -o $OUTPUT_DIR/$WIDGET_NAME.iq -f monkey.jungle -y $DEVELOPER_KEY
-
-if [ $? -eq 0 ]; then
-    echo "Build successful! Output: $OUTPUT_DIR/$WIDGET_NAME.iq"
-    echo ""
-    echo "To install on your watch:"
-    echo "1. Copy $WIDGET_NAME.iq to your watch's GARMIN/Apps folder"
-    echo "2. Or use Garmin Express to install the widget"
-    echo ""
-    echo "To configure:"
-    echo "1. Open Garmin Connect IQ app"
-    echo "2. Go to your device settings"
-    echo "3. Find 'HA Widget' and configure:"
-    echo "   - Config URL: URL to your JSON configuration file"
-    echo "   - API Key: Your Home Assistant long-lived access token"
-    echo "   - HA Server URL: Your Home Assistant server URL"
-else
-    echo "Build failed! Check the errors above."
+# Step 2: Check for package file
+PACKAGE_FILE="bin/garmin-ha-widget.iq"
+if [ ! -f "$PACKAGE_FILE" ]; then
+    echo "❌ Package file not found: $PACKAGE_FILE"
     exit 1
 fi
+
+PACKAGE_SIZE=$(stat -c%s "$PACKAGE_FILE")
+echo "📦 Package: $(basename $PACKAGE_FILE) (${PACKAGE_SIZE} bytes)"
+
+# Step 3: Copy to easy access location
+echo ""
+echo "📂 Preparing for testing..."
+cp "$PACKAGE_FILE" .
+echo "✅ Copied $PACKAGE_FILE to current directory for easy access"
+
+# Step 4: Show build completion
+echo ""
+echo "🎯 BUILD COMPLETE!"
+echo "=================="
+echo ""
+echo "📦 Package: garmin-ha-widget.iq (${PACKAGE_SIZE} bytes)"
+echo ""
+echo "📱 TESTING OPTIONS:"
+echo "1. 🖥️  Simulator: Use Connect IQ SDK simulator"
+echo "2. 📱 Real Device: Copy garmin-ha-widget.iq to your watch"
+echo "3. 💻 Garmin Express: Install via Garmin Express desktop app"
+echo ""
+echo "⚙️  CONFIGURATION REQUIRED:"
+echo "• Config URL: Your JSON configuration file URL"
+echo "• API Key: Your Home Assistant long-lived access token"
+echo "• HA Server URL: (optional - auto-derived from config URL)"
+echo ""
+echo "🔗 QUICK LINKS:"
+echo "• Run tests: ./test.sh"
+echo "• Example config: ./example-config.json"
+echo "• Validation: python3 validate-config.py your-config.json"
+echo "• Store submission prep: ./prepare-submission.sh"
+echo ""
+echo "✅ Ready for testing! 🎯"

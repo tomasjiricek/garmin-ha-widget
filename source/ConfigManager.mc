@@ -77,19 +77,11 @@ class ConfigManager {
     }
 
     function loadConfig(callback as Lang.Method) as Void {
-        loadConfigWithOptions(callback, false);
-    }
-
-    function refreshConfig(callback as Lang.Method) as Void {
-        loadConfigWithOptions(callback, true);
-    }
-
-    function loadConfigWithOptions(callback as Lang.Method, forceRefresh as Lang.Boolean) as Void {
         _callback = callback;
         
         if (_configUrl == null || _configUrl.equals("https://example.com/ha-config.json")) {
             // Use cached config if available
-            if (_cachedConfig != null && !forceRefresh) {
+            if (_cachedConfig != null) {
                 _callback.invoke(true);
                 return;
             }
@@ -97,21 +89,35 @@ class ConfigManager {
             return;
         }
 
-        // Check cache age - only refresh if cache is older than 1 hour or forced
-        var cacheAge = getCacheAge();
-        var cacheExpired = cacheAge < 0 || cacheAge > 3600000; // 1 hour in milliseconds
-        
-        if (_cachedConfig != null && !forceRefresh && !cacheExpired) {
+        // Use cached config if available
+        if (_cachedConfig != null) {
             _callback.invoke(true);
             return;
         }
 
-        // Battery optimization: Add cache-control headers to reduce server load
+        // No cache available, load fresh
+        loadFreshConfig();
+    }
+
+    function refreshConfig(callback as Lang.Method) as Void {
+        _callback = callback;
+        
+        if (_configUrl == null || _configUrl.equals("https://example.com/ha-config.json")) {
+            _callback.invoke(false);
+            return;
+        }
+
+        // Always load fresh when refreshing
+        loadFreshConfig();
+    }
+
+    function loadFreshConfig() as Void {
+        // Always load fresh config from server
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :headers => {
                 "Content-Type" => Communications.REQUEST_CONTENT_TYPE_JSON,
-                "Cache-Control" => forceRefresh ? "no-cache" : "max-age=3600",
+                "Cache-Control" => "no-cache",
                 "Connection" => "close" // Close connection quickly to save battery
             }
         };
