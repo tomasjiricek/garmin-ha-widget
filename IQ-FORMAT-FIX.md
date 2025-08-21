@@ -26,20 +26,16 @@ monkeyc -e -o bin/garmin-ha-widget.iq -f monkey.jungle -y developer_key.der
 
 ### 3. Updated Submission Package
 ```
-connect-iq-submission/
-├── garmin-ha-widget.iq          ← NEW: Correct format
-├── launcher_icon.png
-├── STORE-DESCRIPTION.md
-├── PRIVACY-POLICY.md
-├── RELEASE-NOTES.md
-├── example-config.json
-├── README.md
-└── SUBMISSION-CHECKLIST.txt     ← Updated for .iq format
+├── garmin-ha-widget.iq          # Main widget package ready for upload
+├── launcher_icon.png            # App icon (resources/drawables/launcher_icon.png)
+├── PRIVACY-POLICY.md           # Privacy policy for store submission
+├── STORE-DESCRIPTION.md        # Store description and marketing copy
+└── RELEASE-NOTES.md           # Release notes for version history
 ```
 
 ## Ready for Upload
 
-**File to Upload:** `connect-iq-submission/garmin-ha-widget.iq`
+**File to Upload:** `garmin-ha-widget.iq`
 **Size:** 328,245 bytes
 **Format:** Connect IQ Store Package (.iq)
 **Devices:** Fenix 6/7, Vivoactive 4 series
