@@ -98,4 +98,4 @@ This Garmin HA Widget represents a **best-in-class implementation** with:
 
 Date: August 21, 2025  
 Project: Garmin Home Assistant Widget  
-Version: 0.0.6 (Battery Optimized)  
+Version: 0.0.7 (Battery Optimized)  

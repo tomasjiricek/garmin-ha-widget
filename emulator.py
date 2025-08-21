@@ -10,8 +10,8 @@ import threading
 from datetime import datetime
 
 class MockConnectIQEmulator:
-    def __init__(self, prg_file):
-        self.prg_file = prg_file
+    def __init__(self, iq_file):
+        self.iq_file = iq_file
         self.device = "fenix7"
         self.is_running = False
         self.widget_state = {
@@ -41,7 +41,7 @@ class MockConnectIQEmulator:
         """Start the widget emulation"""
         print(f"🚀 Starting Garmin HA Widget Emulator")
         print(f"📱 Device: {self.device}")
-        print(f"📦 Package: {self.prg_file}")
+        print(f"📦 Package: {self.iq_file}")
         print("=" * 50)
         
         # Simulate widget initialization
@@ -172,14 +172,14 @@ def main():
     print()
     
     # Check if package exists
-    prg_file = "bin/garmin-ha-widget.prg"
+    iq_file = "garmin-ha-widget.iq"
     try:
         import os
-        if not os.path.exists(prg_file):
+        if not os.path.exists(iq_file):
             print("❌ Widget package not found. Please build the widget first.")
             return
         
-        package_size = os.path.getsize(prg_file)
+        package_size = os.path.getsize(iq_file)
         print(f"📦 Package found: {package_size:,} bytes")
         
     except Exception as e:
@@ -187,7 +187,7 @@ def main():
         return
     
     # Start emulator
-    emulator = MockConnectIQEmulator(prg_file)
+    emulator = MockConnectIQEmulator(iq_file)
     emulator.start_widget()
     
     # Show sequences

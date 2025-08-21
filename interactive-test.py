@@ -185,8 +185,8 @@ class GarminWidgetTester:
         print("=" * 50)
         
         # Check widget package
-        if os.path.exists('bin/garmin-ha-widget.prg'):
-            size = os.path.getsize('bin/garmin-ha-widget.prg')
+        if os.path.exists('garmin-ha-widget.iq'):
+            size = os.path.getsize('garmin-ha-widget.iq')
             print(f"📦 Widget package: {size:,} bytes")
         else:
             print("❌ Widget package not found!")

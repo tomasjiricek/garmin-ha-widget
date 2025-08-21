@@ -1,7 +1,6 @@
 <menus>
     <menu id="MainMenu">
         <menu-item id="clear_cache" label="Clear Cache" />
-        <menu-item id="settings" label="@Strings.Settings" />
     </menu>
     
     <menu id="SettingsMenu">

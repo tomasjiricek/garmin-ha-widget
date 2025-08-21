@@ -9,9 +9,9 @@ def main():
     print("=" * 40)
     
     # 1. Check package exists
-    prg_file = "bin/garmin-ha-widget.prg" 
-    if os.path.exists(prg_file):
-        size = os.path.getsize(prg_file)
+    iq_file = "garmin-ha-widget.iq" 
+    if os.path.exists(iq_file):
+        size = os.path.getsize(iq_file)
         print(f"✅ Package: {size:,} bytes")
     else:
         print("❌ Package missing")
@@ -49,7 +49,7 @@ def main():
     print("   ✅ Ready for Connect IQ Store!")
     
     print("\n📱 To test manually:")
-    print("   1. Copy bin/garmin-ha-widget.prg to your watch")
+    print("   1. Copy garmin-ha-widget.iq to your watch")
     print("   2. Configure in Garmin Connect IQ app")  
     print("   3. Try key sequences on your watch")
 

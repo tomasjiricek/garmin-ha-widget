@@ -1,23 +1,22 @@
-# Release Notes - Home Assistant Widget v0.0.6
+# Release Notes - Home Assistant Widget v0.0.7
 
-## 🔄 Version 0.0.6 Update
+## 🔄 Version 0.0.7 Update
 
 ### Bug Fixes & Improvements
-- Fixed critical recursive build script bug that prevented compilation
-- Corrected file format references from .prg to .iq (proper Connect IQ format)
-- Updated test validation to match actual configuration structure
-- Enhanced build system with better SDK detection and error handling
-- Improved documentation accuracy throughout project
+- **Fixed Settings Menu Issue**: Removed misleading "Settings" menu item that didn't actually open settings
+- **Cleaned Up Menu**: Simplified widget menu to only show functional options ("Clear Cache")
+- **Improved User Experience**: Menu now only displays options that actually work as intended
+- **Build System**: Ensured clean compilation with no undefined symbols
 
-### Build System Enhancements
-- Added automatic Connect IQ SDK detection
-- Implemented proper MonkeyC compilation process
-- Enhanced error reporting and user feedback
-- Fixed package generation for Connect IQ Store submission
+### Technical Changes
+- Removed non-functional `System.openSettings()` call (API doesn't exist in Connect IQ)
+- Simplified menu structure in `resources/menus/menus.xml`
+- Updated menu handler to only process valid menu items
+- Users should configure widget settings through Connect IQ mobile app (as designed)
 
 ---
 
-## 🎉 Previous Release - v1.0.0
+## 🔄 Previous Version 0.0.6 Update
 
 ### Core Features
 - **Remote Configuration Loading**: Load sequence definitions from any public JSON URL
