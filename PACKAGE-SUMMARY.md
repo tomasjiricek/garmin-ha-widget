@@ -62,8 +62,8 @@ garmin-ha-widget/
 ## 🚀 Quick Start
 
 1. **Build**: `./build.sh`
-2. **Validate Config**: `python3 validate-config.py your-config.json`
-3. **Install**: Copy `bin/garmin-ha-widget.prg` to watch
+2. **Test**: `./test.sh` (optional)
+3. **Install**: Copy `garmin-ha-widget.iq` to watch
 4. **Configure**: Set Config URL and API Key in Connect IQ app
 5. **Test**: Try key sequences from your configuration
 
@@ -147,8 +147,8 @@ garmin-ha-widget/
 ## 🚀 Quick Start
 
 1. **Build**: `./build.sh`
-2. **Validate Config**: `python3 validate-config.py your-config.json -b`
-3. **Install**: Copy `bin/garmin-ha-widget.prg` to watch
+2. **Test**: `./test.sh` (optional)
+3. **Install**: Copy `garmin-ha-widget.iq` to watch
 4. **Configure**: Set Config URL and API Key in Connect IQ app
 5. **Test**: Try key sequences from your configuration
 

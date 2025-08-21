@@ -30,12 +30,12 @@ def test_configuration_parsing():
             return False
         
         for i, seq in enumerate(sequences):
-            if 'id' not in seq or 'keys' not in seq or 'action' not in seq:
-                print(f"❌ Sequence {i} missing required fields (id, keys, action)")
+            if 'id' not in seq or 'sequence' not in seq or 'action' not in seq:
+                print(f"❌ Sequence {i} missing required fields (id, sequence, action)")
                 return False
             
             # Check key sequence
-            keys = seq['keys']
+            keys = seq['sequence']
             if not isinstance(keys, list) or len(keys) == 0:
                 print(f"❌ Sequence {i} keys must be a non-empty array")
                 return False
@@ -70,8 +70,7 @@ def test_build_artifacts():
     print("🧪 Testing build artifacts...")
     
     required_files = [
-        'bin/garmin-ha-widget.prg',
-        'bin/garmin-ha-widget-settings.json',
+        'bin/garmin-ha-widget.iq',
         'resources/drawables/launcher_icon.png',
         'manifest.xml'
     ]
@@ -86,12 +85,12 @@ def test_build_artifacts():
         return False
     
     # Check file sizes
-    prg_size = os.path.getsize('bin/garmin-ha-widget.prg')
-    if prg_size < 1000:  # Should be at least 1KB
-        print(f"❌ Widget package too small: {prg_size} bytes")
+    iq_size = os.path.getsize('bin/garmin-ha-widget.iq')
+    if iq_size < 1000:  # Should be at least 1KB
+        print(f"❌ Widget package too small: {iq_size} bytes")
         return False
     
-    print(f"✅ Build artifacts test passed (widget size: {prg_size:,} bytes)")
+    print(f"✅ Build artifacts test passed (widget size: {iq_size:,} bytes)")
     return True
 
 def test_manifest_structure():
