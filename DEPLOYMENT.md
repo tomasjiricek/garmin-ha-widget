@@ -26,7 +26,15 @@ chmod +x build.sh
 The build script will:
 - Check for SDK installation
 - Generate a developer key if needed
-- Compile the widget to `bin/garmin-ha-widget.prg`
+- Compile the widget to `bin/garmin-ha-widget.iq`
+
+## Step 2a: Test the Widget (Optional)
+
+```bash
+./test.sh
+```
+
+This runs comprehensive validation and tests to ensure everything works correctly.
 
 ## Step 3: Prepare Configuration
 
@@ -55,13 +63,13 @@ Example minimal config:
 
 ### Method A: Direct Copy
 1. Connect watch to computer via USB
-2. Copy `bin/garmin-ha-widget.prg` to `GARMIN/Apps/` folder on watch
+2. Copy `garmin-ha-widget.iq` to `GARMIN/Apps/` folder on watch
 3. Safely eject watch
 
 ### Method B: Garmin Express
 1. Open Garmin Express
 2. Go to Connect IQ Apps
-3. Add downloaded `.prg` file
+3. Add downloaded `.iq` file
 
 ## Step 5: Configure Widget
 

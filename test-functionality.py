@@ -13,9 +13,9 @@ def test_widget_functionality():
     print("=" * 45)
     
     # Test 1: Package exists and has reasonable size
-    prg_file = "bin/garmin-ha-widget.prg"
-    if os.path.exists(prg_file):
-        size = os.path.getsize(prg_file)
+    iq_file = "bin/garmin-ha-widget.iq"
+    if os.path.exists(iq_file):
+        size = os.path.getsize(iq_file)
         print(f"✅ Widget package: {size:,} bytes")
         if size < 50000:
             print("   ⚠️  Package seems small, but acceptable")
@@ -27,18 +27,28 @@ def test_widget_functionality():
         print("❌ Widget package not found")
         return False
     
-    # Test 2: Settings file exists
-    settings_file = "bin/garmin-ha-widget-settings.json"
-    if os.path.exists(settings_file):
-        print("✅ Settings file generated")
-        try:
-            with open(settings_file, 'r') as f:
-                settings = json.load(f)
-            print(f"   Found {len(settings.get('settings', []))} settings")
-        except:
-            print("   ⚠️  Could not parse settings file")
-    else:
-        print("❌ Settings file not found")
+    # Test 2: Settings files exist (device-specific)
+    settings_files = [
+        "bin/test-fenix6-settings.json",
+        "bin/test-fenix7-settings.json", 
+        "bin/test-vivoactive4-settings.json"
+    ]
+    
+    settings_found = False
+    for settings_file in settings_files:
+        if os.path.exists(settings_file):
+            settings_found = True
+            print(f"✅ Settings file found: {os.path.basename(settings_file)}")
+            try:
+                with open(settings_file, 'r') as f:
+                    settings = json.load(f)
+                print(f"   Found {len(settings.get('settings', []))} settings")
+                break
+            except:
+                print("   ⚠️  Could not parse settings file")
+    
+    if not settings_found:
+        print("⚠️  No settings files found, but not required for basic function")
     
     # Test 3: Configuration validation
     config_file = "example-config.json"

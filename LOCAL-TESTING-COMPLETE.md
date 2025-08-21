@@ -68,7 +68,7 @@ Your Garmin Home Assistant Widget has been thoroughly tested using local emulati
 ## 📱 Ready for Real Device Testing
 
 ### **Next Steps**
-1. **Install on Watch**: Copy `bin/garmin-ha-widget.prg` to your Garmin watch
+1. **Install on Watch**: Copy `garmin-ha-widget.iq` to your Garmin watch
 2. **Configure Settings**: Set Config URL and API Key in Connect IQ app
 3. **Test Sequences**: Try the configured key combinations
 4. **Monitor Battery**: Verify <2% additional daily drain

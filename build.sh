@@ -1,49 +1,75 @@
 #!/bin/bash
 
-# Garmin HA Widget Build Script
-# Builds widget and prepares it for local testing
+# Garmin Connect IQ Widget Build Script
+# Compiles the widget and prepares it for deployment
 
 set -e
 
 echo "🔨 GARMIN HA WIDGET BUILD"
 echo "========================="
 
-# Step 1: Build the widget
+# Configuration
+WIDGET_NAME="garmin-ha-widget"
+OUTPUT_DIR="bin"
+DEVELOPER_KEY="developer_key.der"
+
+# Create output directory if it doesn't exist
+mkdir -p $OUTPUT_DIR
+
 echo "📦 Building widget..."
-if ! ./build.sh; then
+
+# Check if Connect IQ SDK is available
+if command -v monkeyc &> /dev/null; then
+    echo "✅ Connect IQ SDK found in PATH"
+elif [ -d "$HOME/.Garmin/ConnectIQ/Sdks" ]; then
+    # Find the latest SDK version dynamically
+    SDK_PATH=$(find "$HOME/.Garmin/ConnectIQ/Sdks" -name "connectiq-sdk-*" -type d | sort -V | tail -1)
+    if [ -n "$SDK_PATH" ] && [ -d "$SDK_PATH/bin" ]; then
+        export PATH="$SDK_PATH/bin:$PATH"
+        echo "✅ Using Connect IQ SDK: $SDK_PATH"
+    else
+        echo "❌ Connect IQ SDK not found in $HOME/.Garmin/ConnectIQ/Sdks"
+        exit 1
+    fi
+else
+    echo "❌ Connect IQ SDK not found. Please install from:"
+    echo "   https://developer.garmin.com/connect-iq/sdk/"
+    exit 1
+fi
+
+# Generate developer key if it doesn't exist
+if [ ! -f "$DEVELOPER_KEY" ]; then
+    echo "🔑 Generating developer key..."
+    openssl genrsa -out "$DEVELOPER_KEY" 4096
+fi
+
+# Build the widget in .iq format for Connect IQ Store
+echo "🛠️ Compiling widget..."
+monkeyc -e -o "$OUTPUT_DIR/$WIDGET_NAME.iq" -f monkey.jungle -y "$DEVELOPER_KEY"
+
+if [ $? -eq 0 ]; then
+    PACKAGE_SIZE=$(stat -c%s "$OUTPUT_DIR/$WIDGET_NAME.iq")
+    echo "✅ Build completed successfully"
+    echo "📦 Package: $WIDGET_NAME.iq (${PACKAGE_SIZE} bytes)"
+    
+    # Copy to root for easy access
+    cp "$OUTPUT_DIR/$WIDGET_NAME.iq" .
+    echo "📂 Copied to current directory for easy access"
+else
     echo "❌ Build failed!"
     exit 1
 fi
 
-echo "✅ Build completed successfully"
-
-# Step 2: Check for package file
-PACKAGE_FILE="bin/garmin-ha-widget.iq"
-if [ ! -f "$PACKAGE_FILE" ]; then
-    echo "❌ Package file not found: $PACKAGE_FILE"
-    exit 1
-fi
-
-PACKAGE_SIZE=$(stat -c%s "$PACKAGE_FILE")
-echo "📦 Package: $(basename $PACKAGE_FILE) (${PACKAGE_SIZE} bytes)"
-
-# Step 3: Copy to easy access location
-echo ""
-echo "📂 Preparing for testing..."
-cp "$PACKAGE_FILE" .
-echo "✅ Copied $PACKAGE_FILE to current directory for easy access"
-
-# Step 4: Show build completion
+# Show completion info
 echo ""
 echo "🎯 BUILD COMPLETE!"
 echo "=================="
 echo ""
-echo "📦 Package: garmin-ha-widget.iq (${PACKAGE_SIZE} bytes)"
-echo ""
-echo "📱 TESTING OPTIONS:"
-echo "1. 🖥️  Simulator: Use Connect IQ SDK simulator"
-echo "2. 📱 Real Device: Copy garmin-ha-widget.iq to your watch"
-echo "3. 💻 Garmin Express: Install via Garmin Express desktop app"
+echo "📱 NEXT STEPS:"
+echo "1. 🧪 Run tests: ./test.sh"
+echo "2. 🖥️  Test in simulator: Use Connect IQ SDK"
+echo "3. 📱 Install on device: Copy garmin-ha-widget.iq to watch"
+echo "4. 🏪 Prepare for store: ./prepare-submission.sh"
 echo ""
 echo "⚙️  CONFIGURATION REQUIRED:"
 echo "• Config URL: Your JSON configuration file URL"
@@ -51,9 +77,7 @@ echo "• API Key: Your Home Assistant long-lived access token"
 echo "• HA Server URL: (optional - auto-derived from config URL)"
 echo ""
 echo "🔗 QUICK LINKS:"
-echo "• Run tests: ./test.sh"
 echo "• Example config: ./example-config.json"
-echo "• Validation: python3 validate-config.py your-config.json"
-echo "• Store submission prep: ./prepare-submission.sh"
+echo "• Config validation: python3 validate-config.py your-config.json"
 echo ""
 echo "✅ Ready for testing! 🎯"

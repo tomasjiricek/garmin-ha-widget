@@ -42,7 +42,7 @@ cd /path/to/garmin-ha-widget
 - **Long Description**: [See STORE-DESCRIPTION.md]
 
 #### Technical Details
-- **Package File**: Upload `bin/garmin-ha-widget.prg`
+- **Package File**: Upload `garmin-ha-widget.iq`
 - **Min SDK Version**: 3.0.0
 - **Supported Devices**: 
   - Fenix 6, 6S, 6X Pro

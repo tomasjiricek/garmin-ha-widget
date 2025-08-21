@@ -64,7 +64,7 @@ Your **battery-first** Garmin Connect IQ widget is now **100% complete** and rea
    ```
 
 3. **Install on watch**:
-   - Copy `bin/garmin-ha-widget.prg` to your watch
+   - Copy `garmin-ha-widget.iq` to your watch
    - Or use Garmin Express
 
 4. **Configure settings**:

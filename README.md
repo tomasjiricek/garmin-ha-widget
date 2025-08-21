@@ -47,9 +47,14 @@ This widget is engineered for **maximum battery efficiency**:
    python3 validate-config.py your-config.json --battery-tips
    ```
 
-3. **Install on watch**: Copy `bin/garmin-ha-widget.prg` to your watch
+3. **Test the widget** (optional):
+   ```bash
+   ./test.sh
+   ```
 
-4. **Configure in Garmin Connect IQ**:
+4. **Install on watch**: Copy `garmin-ha-widget.iq` to your watch
+
+5. **Configure in Garmin Connect IQ**:
    - **Config URL**: Your JSON configuration file URL *(required)*
    - **API Key**: Your Home Assistant long-lived access token *(required)*
    - **HA Server URL**: *(optional - auto-derived from config URL)*
@@ -146,10 +151,11 @@ This widget is engineered for **maximum battery efficiency**:
 
 ## 🛠️ Development Tools
 
-- **`build.sh`** - Automated build script with SDK detection
+- **`build.sh`** - Build the widget package
+- **`test.sh`** - Run comprehensive tests and validation
 - **`validate-config.py`** - Configuration validator with battery tips
+- **`prepare-submission.sh`** - Prepare files for Connect IQ Store submission
 - **`BATTERY-OPTIMIZATION.md`** - Detailed battery optimization guide
-- **`DEPLOYMENT.md`** - Complete deployment instructions
 
 ## 📊 Battery Performance
 
@@ -170,10 +176,20 @@ This widget is engineered for **maximum battery efficiency**:
 ## 📚 Documentation
 
 - **[Battery Optimization Guide](BATTERY-OPTIMIZATION.md)** - Maximize battery life
-- **[Deployment Guide](DEPLOYMENT.md)** - Step-by-step setup
+- **[Store Submission Guide](STORE-SUBMISSION.md)** - Connect IQ Store process
 - **[Package Summary](PACKAGE-SUMMARY.md)** - Complete feature overview
 
-## 🎉 Ready to Deploy
+## 🏪 Connect IQ Store Submission
+
+Ready to submit to the Garmin Connect IQ Store:
+
+```bash
+./prepare-submission.sh
+```
+
+This creates a `connect-iq-submission/` folder with all required files for manual upload to: https://developer.garmin.com/connect-iq/publish/
+
+## 🎉 Ready for Production
 
 This widget is **production-ready** with professional-grade optimizations:
 - Robust error handling and recovery
