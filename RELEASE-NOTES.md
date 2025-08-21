@@ -1,6 +1,23 @@
-# Release Notes - Home Assistant Widget v1.0.0
+# Release Notes - Home Assistant Widget v0.0.6
 
-## 🎉 Initial Release
+## 🔄 Version 0.0.6 Update
+
+### Bug Fixes & Improvements
+- Fixed critical recursive build script bug that prevented compilation
+- Corrected file format references from .prg to .iq (proper Connect IQ format)
+- Updated test validation to match actual configuration structure
+- Enhanced build system with better SDK detection and error handling
+- Improved documentation accuracy throughout project
+
+### Build System Enhancements
+- Added automatic Connect IQ SDK detection
+- Implemented proper MonkeyC compilation process
+- Enhanced error reporting and user feedback
+- Fixed package generation for Connect IQ Store submission
+
+---
+
+## 🎉 Previous Release - v1.0.0
 
 ### Core Features
 - **Remote Configuration Loading**: Load sequence definitions from any public JSON URL
