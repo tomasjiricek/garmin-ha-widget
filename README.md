@@ -177,7 +177,7 @@ This widget is engineered for **maximum battery efficiency**:
 
 - **[Battery Optimization Guide](BATTERY-OPTIMIZATION.md)** - Maximize battery life
 - **[Store Submission Guide](STORE-SUBMISSION.md)** - Connect IQ Store process
-- **[Package Summary](PACKAGE-SUMMARY.md)** - Complete feature overview
+- **[Deployment Guide](DEPLOYMENT.md)** - Installation and setup instructions
 
 ## 🏪 Connect IQ Store Submission
 
