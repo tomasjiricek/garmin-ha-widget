@@ -83,11 +83,11 @@ def test_widget_functionality():
         print("❌ Example configuration not found")
     
     # Test 4: Device compatibility
-    device_files = [f for f in os.listdir('bin') if f.startswith('test-') and f.endswith('.prg')]
+    device_files = [f for f in os.listdir('bin') if f.startswith('test-') and f.endswith('.json')]
     if device_files:
-        print(f"✅ Device compatibility: {len(device_files)} devices tested")
+        print(f"✅ Device compatibility: {len(device_files)} device configs")
         for device_file in sorted(device_files):
-            device_name = device_file.replace('test-', '').replace('.prg', '')
+            device_name = device_file.replace('test-', '').replace('.json', '')
             size = os.path.getsize(f"bin/{device_file}")
             print(f"   ✅ {device_name}: {size:,} bytes")
     else:

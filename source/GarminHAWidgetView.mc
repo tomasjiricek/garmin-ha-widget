@@ -268,9 +268,6 @@ class GarminHAWidgetMenuDelegate extends WatchUi.MenuInputDelegate {
         if (item == :clear_cache) {
             _view.clearCache();
             WatchUi.popView(WatchUi.SLIDE_DOWN);
-        } else if (item == :settings) {
-            // Settings are handled by Connect IQ app - just close menu
-            WatchUi.popView(WatchUi.SLIDE_DOWN);
         }
     }
 }

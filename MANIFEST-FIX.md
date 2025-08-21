@@ -29,7 +29,7 @@ Updated `manifest.xml` device product list:
 - ✅ Updated package copied to submission directory
 
 ## Next Steps
-1. Re-upload the corrected `garmin-ha-widget.prg` to Connect IQ Store
+1. Re-upload the corrected `garmin-ha-widget.iq` to Connect IQ Store
 2. The manifest should now process without errors
 3. Continue with store submission process
 

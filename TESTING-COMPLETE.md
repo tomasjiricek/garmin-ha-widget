@@ -56,7 +56,7 @@ Tested and compatible with:
 ### Store Information
 - **App Name**: Home Assistant Widget
 - **Category**: Productivity  
-- **Version**: 0.0.6
+- **Version**: 0.0.7
 - **App ID**: e434efa2b3cd447ca404ca32f2e787ca
 
 ### Quick Start URLs
