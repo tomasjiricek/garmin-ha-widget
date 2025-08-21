@@ -11,9 +11,10 @@ connectiq.log
 monkeyc.log
 
 # Build artifacts
-bin/gen/
-bin/internal-mir/
-bin/external-mir/
+*/gen/
+*/internal-mir/
+*/external-mir/
+dist/
 *.prg
 *.iq
 *.debug.xml

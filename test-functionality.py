@@ -13,7 +13,7 @@ def test_widget_functionality():
     print("=" * 45)
     
     # Test 1: Package exists and has reasonable size
-    iq_file = "bin/garmin-ha-widget.iq"
+    iq_file = "dist/garmin-ha-widget.iq"
     if os.path.exists(iq_file):
         size = os.path.getsize(iq_file)
         print(f"✅ Widget package: {size:,} bytes")
@@ -29,9 +29,9 @@ def test_widget_functionality():
     
     # Test 2: Settings files exist (device-specific)
     settings_files = [
-        "bin/test-fenix6-settings.json",
-        "bin/test-fenix7-settings.json", 
-        "bin/test-vivoactive4-settings.json"
+        "tests/test-fenix6-settings.json",
+        "tests/test-fenix7-settings.json", 
+        "tests/test-vivoactive4-settings.json"
     ]
     
     settings_found = False
@@ -83,12 +83,12 @@ def test_widget_functionality():
         print("❌ Example configuration not found")
     
     # Test 4: Device compatibility
-    device_files = [f for f in os.listdir('bin') if f.startswith('test-') and f.endswith('.json')]
+    device_files = [f for f in os.listdir('tests') if f.startswith('test-') and f.endswith('.json')]
     if device_files:
         print(f"✅ Device compatibility: {len(device_files)} device configs")
         for device_file in sorted(device_files):
             device_name = device_file.replace('test-', '').replace('.json', '')
-            size = os.path.getsize(f"bin/{device_file}")
+            size = os.path.getsize(f"tests/{device_file}")
             print(f"   ✅ {device_name}: {size:,} bytes")
     else:
         print("⚠️  No device-specific builds found")

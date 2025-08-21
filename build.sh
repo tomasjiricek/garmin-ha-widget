@@ -10,7 +10,7 @@ echo "========================="
 
 # Configuration
 WIDGET_NAME="garmin-ha-widget"
-OUTPUT_DIR="bin"
+OUTPUT_DIR="dist"
 DEVELOPER_KEY="developer_key.der"
 
 # Create output directory if it doesn't exist
@@ -52,9 +52,13 @@ if [ $? -eq 0 ]; then
     echo "✅ Build completed successfully"
     echo "📦 Package: $WIDGET_NAME.iq (${PACKAGE_SIZE} bytes)"
     
-    # Copy to root for easy access
-    cp "$OUTPUT_DIR/$WIDGET_NAME.iq" .
-    echo "📂 Copied to current directory for easy access"
+    # Copy distribution files to dist directory
+    echo "📂 Preparing distribution package..."
+    cp README.md "$OUTPUT_DIR/"
+    cp PRIVACY-POLICY.md "$OUTPUT_DIR/"
+    cp resources/drawables/launcher_icon.png "$OUTPUT_DIR/"
+    
+    echo "📦 Distribution package ready in $OUTPUT_DIR/"
 else
     echo "❌ Build failed!"
     exit 1
@@ -68,7 +72,7 @@ echo ""
 echo "📱 NEXT STEPS:"
 echo "1. 🧪 Run tests: ./test.sh"
 echo "2. 🖥️  Test in simulator: Use Connect IQ SDK"
-echo "3. 📱 Install on device: Copy garmin-ha-widget.iq to watch"
+echo "3. 📱 Install on device: Copy dist/garmin-ha-widget.iq to watch"
 echo "4. 🏪 Upload to store: https://developer.garmin.com/connect-iq/publish/"
 echo ""
 echo "⚙️  CONFIGURATION REQUIRED:"

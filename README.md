@@ -52,7 +52,7 @@ This widget is engineered for **maximum battery efficiency**:
    ./test.sh
    ```
 
-4. **Install on watch**: Copy `garmin-ha-widget.iq` to your watch
+4. **Install on watch**: Copy `dist/garmin-ha-widget.iq` to your watch
 
 5. **Configure in Garmin Connect IQ**:
    - **Config URL**: Your JSON configuration file URL *(required)*
@@ -188,7 +188,7 @@ Ready to submit to the Garmin Connect IQ Store:
 # See STORE-SUBMISSION.md for detailed steps
 ```
 
-Upload the widget package `garmin-ha-widget.iq` directly to: https://developer.garmin.com/connect-iq/publish/
+Upload the widget package `dist/garmin-ha-widget.iq` directly to: https://developer.garmin.com/connect-iq/publish/
 
 Use the documentation files in the project root:
 - `STORE-DESCRIPTION.md` for store listing
