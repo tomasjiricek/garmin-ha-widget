@@ -126,4 +126,4 @@ The widget is now ready for:
 ---
 
 *Local testing completed: August 21, 2025*  
-*Widget version: 1.0.0 (Battery Optimized)*
+*Widget version: 0.0.6 (Battery Optimized)*
