@@ -174,17 +174,38 @@ class GarminHAWidgetView extends WatchUi.View {
     }
 
     function clearCache() as Void {
-        if (!_isActive || _configManager == null) { return; }
-        
-        _configManager.clearCache();
-        _statusText = "Reloading...";
-        if (_keySequenceHandler != null) {
-            _keySequenceHandler.setSequences([]);
+        // Initialize components if needed
+        if (_configManager == null) {
+            initializeComponents();
         }
-        requestUpdateIfActive();
         
-        // Force load fresh config
-        _configManager.refreshConfig(method(:onConfigLoaded));
+        if (_configManager == null) { 
+            _statusText = "Error: Manager not ready";
+            requestUpdateIfActive();
+            return; 
+        }
+        
+        try {
+            _configManager.clearCache();
+            _statusText = "Cache cleared. Reloading...";
+            if (_keySequenceHandler != null) {
+                _keySequenceHandler.setSequences([]);
+            }
+            requestUpdateIfActive();
+            
+            // Delay reload slightly to show status message
+            var reloadTimer = new Timer.Timer();
+            reloadTimer.start(method(:reloadConfigDelayed), 500, false);
+        } catch (ex) {
+            _statusText = "Cache clear failed";
+            requestUpdateIfActive();
+        }
+    }
+    
+    function reloadConfigDelayed() as Void {
+        if (_configManager != null) {
+            _configManager.refreshConfig(method(:onConfigLoaded));
+        }
     }
 
     function getKeySequenceHandler() as KeySequenceHandler? {
@@ -266,7 +287,11 @@ class GarminHAWidgetMenuDelegate extends WatchUi.MenuInputDelegate {
 
     function onMenuItem(item) as Void {
         if (item == :clear_cache) {
-            _view.clearCache();
+            try {
+                _view.clearCache();
+            } catch (ex) {
+                // If clearing fails, still close menu
+            }
             WatchUi.popView(WatchUi.SLIDE_DOWN);
         }
     }

@@ -5,14 +5,32 @@ import Toybox.Application;
 class HomeAssistantClient {
     private var _configManager as ConfigManager;
     private var _callback as Lang.Method?;
+    private var _isRequestInProgress as Lang.Boolean;
+    private var _requestQueue as Lang.Array;
 
     function initialize() {
         _configManager = new ConfigManager();
         _configManager.loadSettings();
+        _isRequestInProgress = false;
+        _requestQueue = [];
     }
 
     function sendAction(action as Lang.Dictionary, callback as Lang.Method) as Void {
+        // Queue the request if another is in progress
+        if (_isRequestInProgress) {
+            _requestQueue.add({
+                "action" => action,
+                "callback" => callback
+            });
+            return;
+        }
+        
+        _executeAction(action, callback);
+    }
+
+    function _executeAction(action as Lang.Dictionary, callback as Lang.Method) as Void {
         _callback = callback;
+        _isRequestInProgress = true;
         
         var apiKey = _configManager.getApiKey();
         var haUrl = _configManager.getHaUrl();
@@ -28,7 +46,9 @@ class HomeAssistantClient {
         if (apiKey == null || haUrl == null || 
             apiKey.equals("your_ha_api_key_here") || 
             haUrl.equals("https://your-ha-instance.com")) {
+            _isRequestInProgress = false;
             _callback.invoke(false);
+            _processNextRequest();
             return;
         }
 
@@ -38,7 +58,9 @@ class HomeAssistantClient {
         // Parse action type (e.g., "script.turn_on" -> domain: "script", service: "turn_on")
         var dotIndex = actionType.find(".");
         if (dotIndex == null) {
+            _isRequestInProgress = false;
             _callback.invoke(false);
+            _processNextRequest();
             return;
         }
         
@@ -67,8 +89,25 @@ class HomeAssistantClient {
 
     function onActionResponse(responseCode as Lang.Number, data as Lang.Dictionary?) as Void {
         var success = (responseCode >= 200 && responseCode < 300);
+        _isRequestInProgress = false;
+        
         if (_callback != null) {
             _callback.invoke(success);
+        }
+        
+        // Process next request in queue if any
+        _processNextRequest();
+    }
+
+    function _processNextRequest() as Void {
+        if (_requestQueue.size() > 0) {
+            var nextRequest = _requestQueue[0] as Lang.Dictionary;
+            _requestQueue = _requestQueue.slice(1, _requestQueue.size());
+            
+            var action = nextRequest["action"] as Lang.Dictionary;
+            var callback = nextRequest["callback"] as Lang.Method;
+            
+            _executeAction(action, callback);
         }
     }
 
