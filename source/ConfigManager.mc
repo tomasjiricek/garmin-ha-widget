@@ -11,11 +11,15 @@ class ConfigManager {
     private var _callback as Lang.Method?;
     private var _cachedConfig as Lang.Dictionary?;
     private var _lastConfigLoad as Lang.Number;
+    private var _isLoadingConfig as Lang.Boolean;
+    private var _configCallbacks as Lang.Array;
 
     function initialize() {
         _sequences = [];
         _cachedConfig = null;
         _lastConfigLoad = 0;
+        _isLoadingConfig = false;
+        _configCallbacks = [];
         loadSettings();
         loadCachedConfig();
     }
@@ -77,6 +81,12 @@ class ConfigManager {
     }
 
     function loadConfig(callback as Lang.Method) as Void {
+        // If config is already loading, queue the callback
+        if (_isLoadingConfig) {
+            _configCallbacks.add(callback);
+            return;
+        }
+        
         _callback = callback;
         
         if (_configUrl == null || _configUrl.equals("https://example.com/ha-config.json")) {
@@ -100,6 +110,12 @@ class ConfigManager {
     }
 
     function refreshConfig(callback as Lang.Method) as Void {
+        // If config is already loading, queue the callback
+        if (_isLoadingConfig) {
+            _configCallbacks.add(callback);
+            return;
+        }
+        
         _callback = callback;
         
         if (_configUrl == null || _configUrl.equals("https://example.com/ha-config.json")) {
@@ -112,6 +128,13 @@ class ConfigManager {
     }
 
     function loadFreshConfig() as Void {
+        // Prevent multiple concurrent config loads
+        if (_isLoadingConfig) {
+            return;
+        }
+        
+        _isLoadingConfig = true;
+        
         // Always load fresh config from server
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
@@ -126,18 +149,31 @@ class ConfigManager {
     }
 
     function onConfigReceived(responseCode as Lang.Number, data as Lang.Dictionary?) as Void {
+        _isLoadingConfig = false;
+        var success = false;
+        
         if (responseCode == 200 && data != null) {
             parseConfig(data);
             saveCachedConfig(data);
-            _callback.invoke(true);
+            success = true;
         } else {
             // If fresh request failed but we have cached config, use that
             if (_cachedConfig != null) {
-                _callback.invoke(true);
-            } else {
-                _callback.invoke(false);
+                success = true;
             }
         }
+        
+        // Call the primary callback
+        if (_callback != null) {
+            _callback.invoke(success);
+        }
+        
+        // Call any queued callbacks
+        for (var i = 0; i < _configCallbacks.size(); i++) {
+            var callback = _configCallbacks[i] as Lang.Method;
+            callback.invoke(success);
+        }
+        _configCallbacks = [];
     }
 
     function parseConfig(data as Lang.Dictionary) as Void {
@@ -188,10 +224,25 @@ class ConfigManager {
     }
 
     function clearCache() as Void {
-        Application.Storage.deleteValue("cachedConfig");
-        Application.Storage.deleteValue("lastConfigLoad");
-        _cachedConfig = null;
-        _lastConfigLoad = 0;
-        _sequences = [];
+        try {
+            Application.Storage.deleteValue("cachedConfig");
+            Application.Storage.deleteValue("lastConfigLoad");
+            _cachedConfig = null;
+            _lastConfigLoad = 0;
+            _sequences = [];
+            _apiKey = null;
+            _haUrl = null;
+            _isLoadingConfig = false;
+            _configCallbacks = [];
+        } catch (ex) {
+            // If storage operations fail, at least clear memory
+            _cachedConfig = null;
+            _lastConfigLoad = 0;
+            _sequences = [];
+            _apiKey = null;
+            _haUrl = null;
+            _isLoadingConfig = false;
+            _configCallbacks = [];
+        }
     }
 }
