@@ -227,22 +227,16 @@ class ConfigManager {
         try {
             Application.Storage.deleteValue("cachedConfig");
             Application.Storage.deleteValue("lastConfigLoad");
-            _cachedConfig = null;
-            _lastConfigLoad = 0;
-            _sequences = [];
-            _apiKey = null;
-            _haUrl = null;
-            _isLoadingConfig = false;
-            _configCallbacks = [];
         } catch (ex) {
-            // If storage operations fail, at least clear memory
-            _cachedConfig = null;
-            _lastConfigLoad = 0;
-            _sequences = [];
-            _apiKey = null;
-            _haUrl = null;
-            _isLoadingConfig = false;
-            _configCallbacks = [];
+            // No-op
         }
+        _cachedConfig = null;
+        _lastConfigLoad = 0;
+        _sequences = [];
+        _apiKey = null;
+        _haUrl = null;
+        _isLoadingConfig = false;
+        _configCallbacks = [];
+
     }
 }

@@ -31,7 +31,6 @@ def test_widget_functionality():
     settings_files = [
         "tests/test-fenix6-settings.json",
         "tests/test-fenix7-settings.json", 
-        "tests/test-vivoactive4-settings.json"
     ]
     
     settings_found = False

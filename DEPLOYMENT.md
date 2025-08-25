@@ -5,7 +5,7 @@ This guide will help you build and deploy the Garmin Home Assistant Widget to yo
 ## Prerequisites
 
 1. **Garmin Connect IQ SDK**: Download from [developer.garmin.com](https://developer.garmin.com/connect-iq/sdk/)
-2. **Compatible Garmin Watch**: Fenix 6/7, Vivoactive 4, Venu 2, Forerunner 945/745, etc.
+2. **Compatible Garmin Watch**: Fenix 6/7
 3. **Home Assistant Server**: With API access enabled
 4. **Web Server**: To host your configuration JSON file
 
