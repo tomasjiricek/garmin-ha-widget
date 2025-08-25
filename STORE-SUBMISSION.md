@@ -47,9 +47,6 @@ cd /path/to/garmin-ha-widget
 - **Supported Devices**: 
   - Fenix 6, 6S, 6X Pro
   - Fenix 7, 7S
-  - Vivoactive 4, 4S
-  - Venu, Venu 2, 2S
-  - Forerunner 745, 945
 
 #### Permissions
 - **Communications**: Required for HTTP requests to Home Assistant

@@ -49,9 +49,6 @@ The Home Assistant Widget brings powerful smart home control directly to your wr
 
 ### 📱 Supported Devices
 - Fenix 6/7 Series
-- Vivoactive 4 Series  
-- Venu Series
-- Forerunner 745/945
 
 ### 🔧 Easy Setup
 1. Install widget from Connect IQ Store

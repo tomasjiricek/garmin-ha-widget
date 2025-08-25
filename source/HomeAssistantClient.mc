@@ -5,6 +5,7 @@ import Toybox.Application;
 class HomeAssistantClient {
     private var _configManager as ConfigManager;
     private var _callback as Lang.Method?;
+    private var _statusCallback as Lang.Method?;
     private var _isRequestInProgress as Lang.Boolean;
     private var _requestQueue as Lang.Array;
 
@@ -15,28 +16,34 @@ class HomeAssistantClient {
         _requestQueue = [];
     }
 
-    function sendAction(action as Lang.Dictionary, callback as Lang.Method) as Void {
-        // Queue the request if another is in progress
-        if (_isRequestInProgress) {
-            _requestQueue.add({
-                "action" => action,
-                "callback" => callback
-            });
-            return;
+    function sendAction(action as Lang.Dictionary, callback as Lang.Method, statusCallback as Lang.Method?) as Void {
+        // Queue the request
+        _requestQueue.add({
+            "action" => action,
+            "callback" => callback,
+            "statusCallback" => statusCallback
+        });
+
+        if (!_isRequestInProgress) {
+            _processNextRequest();
         }
-        
-        _executeAction(action, callback);
     }
 
-    function _executeAction(action as Lang.Dictionary, callback as Lang.Method) as Void {
+    function _executeAction(action as Lang.Dictionary, callback as Lang.Method, statusCallback as Lang.Method?) as Void {
         _callback = callback;
+        _statusCallback = statusCallback;
         _isRequestInProgress = true;
-        
+
+        // Notify view that we're actually sending now
+        if (_statusCallback != null) {
+            _statusCallback.invoke("Sending...");
+        }
+
         var apiKey = _configManager.getApiKey();
         var haUrl = _configManager.getHaUrl();
         
         // If no HA URL configured, try to derive from config URL
-        if (haUrl == null || haUrl.equals("https://your-ha-instance.com")) {
+        if (haUrl == null || haUrl.equals("https://your-ha-instance.com") || haUrl.equals("")) {
             var configUrl = _configManager.getConfigUrl();
             if (configUrl != null && !configUrl.equals("https://example.com/ha-config.json")) {
                 haUrl = deriveHaUrlFromConfigUrl(configUrl);
@@ -47,7 +54,12 @@ class HomeAssistantClient {
             apiKey.equals("your_ha_api_key_here") || 
             haUrl.equals("https://your-ha-instance.com")) {
             _isRequestInProgress = false;
-            _callback.invoke(false);
+            if (_callback != null) {
+                var callbackMethod = _callback;
+                _callback = null;
+                _statusCallback = null;
+                callbackMethod.invoke(false);
+            }
             _processNextRequest();
             return;
         }
@@ -59,7 +71,12 @@ class HomeAssistantClient {
         var dotIndex = actionType.find(".");
         if (dotIndex == null) {
             _isRequestInProgress = false;
-            _callback.invoke(false);
+            if (_callback != null) {
+                var callbackMethod = _callback;
+                _callback = null;
+                _statusCallback = null;
+                callbackMethod.invoke(false);
+            }
             _processNextRequest();
             return;
         }
@@ -80,7 +97,9 @@ class HomeAssistantClient {
                 "Authorization" => "Bearer " + apiKey,
                 "Connection" => "close", // Close connection quickly to save battery
                 "User-Agent" => "GarminHAWidget/1.0" // Identify requests for potential server optimizations
-            }
+            },
+            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON,
+            :timeout => 10 // 10 second timeout for battery optimization
         };
 
         // Battery optimization: Use shorter timeout for quicker failures
@@ -92,7 +111,10 @@ class HomeAssistantClient {
         _isRequestInProgress = false;
         
         if (_callback != null) {
-            _callback.invoke(success);
+            var callbackMethod = _callback;
+            _callback = null; // Clear callback before invoking to prevent issues
+            _statusCallback = null; // Clear status callback too
+            callbackMethod.invoke(success);
         }
         
         // Process next request in queue if any
@@ -106,8 +128,9 @@ class HomeAssistantClient {
             
             var action = nextRequest["action"] as Lang.Dictionary;
             var callback = nextRequest["callback"] as Lang.Method;
+            var statusCallback = nextRequest["statusCallback"] as Lang.Method?;
             
-            _executeAction(action, callback);
+            _executeAction(action, callback, statusCallback);
         }
     }
 
@@ -115,9 +138,10 @@ class HomeAssistantClient {
         var protocolEnd = configUrl.find("://");
         if (protocolEnd != null) {
             var domainStart = protocolEnd + 3;
-            var pathStart = configUrl.find("/");
-            if (pathStart != null && pathStart > domainStart) {
-                return configUrl.substring(0, pathStart);
+            var domainPart = configUrl.substring(domainStart, configUrl.length());
+            var pathStart = domainPart.find("/");
+            if (pathStart != null) {
+                return configUrl.substring(0, domainStart + pathStart);
             } else {
                 // No path, use entire URL as base
                 return configUrl;

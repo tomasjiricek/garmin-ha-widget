@@ -168,10 +168,6 @@ This widget is engineered for **maximum battery efficiency**:
 ## 🎯 Supported Devices
 
 - Fenix 6/7 series
-- Vivoactive 4/4S
-- Venu/Venu 2/2S
-- Forerunner 945/745
-- And more Connect IQ 3.0+ devices
 
 ## 📚 Documentation
 

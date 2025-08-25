@@ -112,45 +112,44 @@ class GarminHAWidgetView extends WatchUi.View {
         } else {
             _statusText = "Config Error";
         }
-        requestUpdateIfActive();
+        requestUpdateIfActive(_statusText, "");
     }
 
     function onSequenceCompleted(sequenceId as Lang.String, action as Lang.Dictionary) as Void {
         if (!_isActive) { return; } // Don't process if widget not visible
         
-        _statusText = "Sending...";
-        _sequenceText = "";
-        requestUpdateIfActive();
-        
         if (_haClient != null) {
-            _haClient.sendAction(action, method(:onActionResult));
+            _haClient.sendAction(action, method(:onActionResult), method(:onStatusUpdate));
         }
     }
 
     function onActionResult(success as Lang.Boolean) as Void {
         if (!_isActive) { return; } // Don't update if widget not visible
-        
+
         if (success) {
-            _statusText = "Action Sent";
+           requestUpdateIfActive("Action Sent", "");
         } else {
-            _statusText = "Send Failed";
+            requestUpdateIfActive("Sending Failed", "");
         }
-        requestUpdateIfActive();
+        
         
         // Reset status after 3 seconds (increased from 2 to reduce timer usage)
         var timer = new Timer.Timer();
         timer.start(method(:resetStatus), 3000, false);
     }
 
-    function resetStatus() as Void {
-        if (!_isActive) { return; } // Don't update if widget not visible
-        
-        _statusText = "Ready";
-        requestUpdateIfActive();
+    function onStatusUpdate(status as Lang.String) as Void {
+        requestUpdateIfActive(status, "");
     }
 
-    function requestUpdateIfActive() as Void {
+    function resetStatus() as Void {
+        requestUpdateIfActive("Ready", "");
+    }
+
+    function requestUpdateIfActive(status as Lang.String, sequence as Lang.String) as Void {
         if (_isActive) {
+            _statusText = status;
+            _sequenceText = sequence;
             WatchUi.requestUpdate();
         }
     }
@@ -168,8 +167,7 @@ class GarminHAWidgetView extends WatchUi.View {
         
         // Only update if sequence actually changed
         if (!newSequenceText.equals(_sequenceText)) {
-            _sequenceText = newSequenceText;
-            requestUpdateIfActive();
+            requestUpdateIfActive(_statusText, newSequenceText);
         }
     }
 
@@ -180,25 +178,23 @@ class GarminHAWidgetView extends WatchUi.View {
         }
         
         if (_configManager == null) { 
-            _statusText = "Error: Manager not ready";
-            requestUpdateIfActive();
+            requestUpdateIfActive("Error: Manager not ready", "");
             return; 
         }
         
         try {
             _configManager.clearCache();
-            _statusText = "Cache cleared. Reloading...";
+ ;
             if (_keySequenceHandler != null) {
                 _keySequenceHandler.setSequences([]);
             }
-            requestUpdateIfActive();
-            
+            requestUpdateIfActive("Cache cleared. Reloading...", "");
+
             // Delay reload slightly to show status message
             var reloadTimer = new Timer.Timer();
             reloadTimer.start(method(:reloadConfigDelayed), 500, false);
         } catch (ex) {
-            _statusText = "Cache clear failed";
-            requestUpdateIfActive();
+            requestUpdateIfActive("Cache clear failed", "");
         }
     }
     

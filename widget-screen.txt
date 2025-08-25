@@ -60,5 +60,5 @@
 
 📦 PACKAGE DETAILS:
   • File: garmin-ha-widget.iq (328KB)
-  • Devices: Fenix 6/7, Vivoactive 4 series
+  • Devices: Fenix 6/7
   • Format: Connect IQ Store ready

@@ -166,15 +166,15 @@ class MockConnectIQEmulator:
         print("\n👋 Widget emulator stopped")
 
 def main():
+    import os
     """Main emulator function"""
     print("🎯 Garmin Connect IQ Widget Emulator")
     print(f"⏰ Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print()
     
     # Check if package exists
-    iq_file = "garmin-ha-widget.iq"
+    iq_file = os.path.join('dist', 'garmin-ha-widget.iq')
     try:
-        import os
         if not os.path.exists(iq_file):
             print("❌ Widget package not found. Please build the widget first.")
             return
