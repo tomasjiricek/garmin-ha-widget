@@ -184,7 +184,6 @@ class GarminHAWidgetView extends WatchUi.View {
         
         try {
             _configManager.clearCache();
- ;
             if (_keySequenceHandler != null) {
                 _keySequenceHandler.setSequences([]);
             }
@@ -284,11 +283,12 @@ class GarminHAWidgetMenuDelegate extends WatchUi.MenuInputDelegate {
     function onMenuItem(item) as Void {
         if (item == :clear_cache) {
             try {
+                // Close the menu first, then perform cache clear to avoid UI issues
+                WatchUi.popView(WatchUi.SLIDE_DOWN);
                 _view.clearCache();
             } catch (ex) {
-                // If clearing fails, still close menu
+                // ignore errors during clear
             }
-            WatchUi.popView(WatchUi.SLIDE_DOWN);
         }
     }
 }
