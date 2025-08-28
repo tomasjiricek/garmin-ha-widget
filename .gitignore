@@ -18,6 +18,7 @@ dist/
 *.prg
 *.iq
 *.debug.xml
+*.mir
 
 # Developer keys (security)
 developer_key.der

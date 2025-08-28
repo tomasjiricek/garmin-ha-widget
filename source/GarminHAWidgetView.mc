@@ -2,6 +2,7 @@ import Toybox.Graphics;
 import Toybox.WatchUi;
 import Toybox.Lang;
 import Toybox.Timer;
+import Toybox.System;
 
 class GarminHAWidgetView extends WatchUi.View {
 
@@ -23,7 +24,7 @@ class GarminHAWidgetView extends WatchUi.View {
         _lastSequenceText = "";
         _needsRedraw = true;
         _isActive = false;
-        
+
         // Lazy initialization - only create when widget becomes active
     }
 
@@ -49,10 +50,10 @@ class GarminHAWidgetView extends WatchUi.View {
             _configManager = new ConfigManager();
             _keySequenceHandler = new KeySequenceHandler();
             _haClient = new HomeAssistantClient();
-            
+
             // Set up callback for sequence completion
             _keySequenceHandler.setSequenceCallback(method(:onSequenceCompleted));
-            
+
             // Load configuration only when widget becomes active
             _configManager.loadConfig(method(:onConfigLoaded));
         }
@@ -64,8 +65,8 @@ class GarminHAWidgetView extends WatchUi.View {
 
     function onUpdate(dc as Graphics.Dc) as Void {
         // Only redraw if something actually changed
-        if (!_needsRedraw && 
-            _statusText.equals(_lastStatusText) && 
+        if (!_needsRedraw &&
+            _statusText.equals(_lastStatusText) &&
             _sequenceText.equals(_lastSequenceText)) {
             return;
         }
@@ -73,23 +74,23 @@ class GarminHAWidgetView extends WatchUi.View {
         // Efficient drawing - clear only what's needed
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
         dc.clear();
-        
+
         var width = dc.getWidth();
         var height = dc.getHeight();
-        
+
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        
+
         // Draw title only once during initialization
         if (_needsRedraw) {
             dc.drawText(width / 2, 20, Graphics.FONT_SMALL, "HA Widget", Graphics.TEXT_JUSTIFY_CENTER);
         }
-        
+
         // Draw status - only if changed
         if (!_statusText.equals(_lastStatusText)) {
             dc.drawText(width / 2, height / 2 - 10, Graphics.FONT_TINY, _statusText, Graphics.TEXT_JUSTIFY_CENTER);
             _lastStatusText = _statusText;
         }
-        
+
         // Draw current sequence if active - only if changed
         if (!_sequenceText.equals(_lastSequenceText)) {
             if (_sequenceText.length() > 0) {
@@ -97,27 +98,27 @@ class GarminHAWidgetView extends WatchUi.View {
             }
             _lastSequenceText = _sequenceText;
         }
-        
+
         _needsRedraw = false;
     }
 
     function onConfigLoaded(success as Lang.Boolean) as Void {
         if (!_isActive) { return; } // Don't update if widget not visible
-        
+
         if (success) {
             _statusText = "Ready";
             if (_keySequenceHandler != null) {
                 _keySequenceHandler.setSequences(_configManager.getSequences());
             }
         } else {
-            _statusText = "Config Error";
+            _statusText = "Error: Config empty or invalid";
         }
         requestUpdateIfActive(_statusText, "");
     }
 
     function onSequenceCompleted(sequenceId as Lang.String, action as Lang.Dictionary) as Void {
         if (!_isActive) { return; } // Don't process if widget not visible
-        
+
         if (_haClient != null) {
             _haClient.sendAction(action, method(:onActionResult), method(:onStatusUpdate));
         }
@@ -127,12 +128,11 @@ class GarminHAWidgetView extends WatchUi.View {
         if (!_isActive) { return; } // Don't update if widget not visible
 
         if (success) {
-           requestUpdateIfActive("Action Sent", "");
+           requestUpdateIfActive("Action sent", "");
         } else {
-            requestUpdateIfActive("Sending Failed", "");
+            requestUpdateIfActive("Error: Sending action failed", "");
         }
-        
-        
+
         // Reset status after 3 seconds (increased from 2 to reduce timer usage)
         var timer = new Timer.Timer();
         timer.start(method(:resetStatus), 3000, false);
@@ -156,7 +156,7 @@ class GarminHAWidgetView extends WatchUi.View {
 
     function updateSequenceDisplay(sequence as Lang.Array) as Void {
         if (!_isActive) { return; } // Don't update if widget not visible
-        
+
         var newSequenceText = "";
         for (var i = 0; i < sequence.size(); i++) {
             newSequenceText += sequence[i] as Lang.String;
@@ -164,7 +164,7 @@ class GarminHAWidgetView extends WatchUi.View {
                 newSequenceText += "-";
             }
         }
-        
+
         // Only update if sequence actually changed
         if (!newSequenceText.equals(_sequenceText)) {
             requestUpdateIfActive(_statusText, newSequenceText);
@@ -172,35 +172,28 @@ class GarminHAWidgetView extends WatchUi.View {
     }
 
     function clearCache() as Void {
-        // Initialize components if needed
+        WatchUi.popView(WatchUi.SLIDE_DOWN);
+        var reloadTimer = new Timer.Timer();
+        reloadTimer.start(method(:clearCacheAndReloadConfig), 500, false);
+    }
+
+    function clearCacheAndReloadConfig() as Void {
         if (_configManager == null) {
+            // Initialize config manager
             initializeComponents();
         }
-        
-        if (_configManager == null) { 
-            requestUpdateIfActive("Error: Manager not ready", "");
-            return; 
-        }
-        
-        try {
-            _configManager.clearCache();
-            if (_keySequenceHandler != null) {
-                _keySequenceHandler.setSequences([]);
-            }
-            requestUpdateIfActive("Cache cleared. Reloading...", "");
 
-            // Delay reload slightly to show status message
-            var reloadTimer = new Timer.Timer();
-            reloadTimer.start(method(:reloadConfigDelayed), 500, false);
-        } catch (ex) {
-            requestUpdateIfActive("Cache clear failed", "");
+        if (_configManager == null) {
+            requestUpdateIfActive("Error: Manager not ready", "");
+            return;
         }
-    }
-    
-    function reloadConfigDelayed() as Void {
-        if (_configManager != null) {
-            _configManager.refreshConfig(method(:onConfigLoaded));
+
+        _configManager.clearCache();
+        if (_keySequenceHandler != null) {
+            _keySequenceHandler.initialize(); // Reset
         }
+
+        _configManager.loadConfig(method(:onConfigLoaded));
     }
 
     function getKeySequenceHandler() as KeySequenceHandler? {
@@ -219,7 +212,7 @@ class GarminHAWidgetDelegate extends WatchUi.BehaviorDelegate {
     function onKey(keyEvent as WatchUi.KeyEvent) as Lang.Boolean {
         var key = keyEvent.getKey();
         var keyString = "";
-        
+
         switch (key) {
             case WatchUi.KEY_UP:
                 keyString = "UP";
@@ -238,13 +231,13 @@ class GarminHAWidgetDelegate extends WatchUi.BehaviorDelegate {
                     var handler = _view.getKeySequenceHandler();
                     if (handler.getCurrentSequence().size() == 0) {
                         // No active sequence, exit widget
-                        WatchUi.popView(WatchUi.SLIDE_DOWN);
+                        WatchUi.popView(WatchUi.SLIDE_RIGHT);
                         return true;
                     }
                     // Has active sequence, process as normal key
                 } else {
                     // No handler, exit widget
-                    WatchUi.popView(WatchUi.SLIDE_DOWN);
+                    WatchUi.popView(WatchUi.SLIDE_RIGHT);
                     return true;
                 }
                 break;
@@ -257,12 +250,12 @@ class GarminHAWidgetDelegate extends WatchUi.BehaviorDelegate {
             default:
                 return false;
         }
-        
+
         if (_view.getKeySequenceHandler() != null) {
             var currentSequence = _view.getKeySequenceHandler().handleKeyPress(keyString);
             _view.updateSequenceDisplay(currentSequence);
         }
-        
+
         return true;
     }
 
@@ -282,13 +275,8 @@ class GarminHAWidgetMenuDelegate extends WatchUi.MenuInputDelegate {
 
     function onMenuItem(item) as Void {
         if (item == :clear_cache) {
-            try {
-                // Close the menu first, then perform cache clear to avoid UI issues
-                WatchUi.popView(WatchUi.SLIDE_DOWN);
-                _view.clearCache();
-            } catch (ex) {
-                // ignore errors during clear
-            }
+            _view.clearCache();
+            return;
         }
     }
 }
