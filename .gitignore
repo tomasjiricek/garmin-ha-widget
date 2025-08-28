@@ -1,3 +1,7 @@
+# Private documentation (maintainer only)
+STORE-SUBMISSION.md
+STORE-DESCRIPTION.md
+
 # Log files
 *.log
 *.log.*
