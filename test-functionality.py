@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Quick functional test for Garmin HA Widget
+Quick functional test for Garmin HASSequence
 Tests core functionality without requiring simulator
 """
 
@@ -9,9 +9,9 @@ import os
 
 def test_widget_functionality():
     """Test core widget functionality"""
-    print("🚀 Garmin HA Widget - Functionality Test")
+    print("🚀 Garmin HASSequence - Functionality Test")
     print("=" * 45)
-    
+
     # Test 1: Package exists and has reasonable size
     iq_file = "dist/garmin-ha-widget.iq"
     if os.path.exists(iq_file):
@@ -26,13 +26,13 @@ def test_widget_functionality():
     else:
         print("❌ Widget package not found")
         return False
-    
+
     # Test 2: Settings files exist (device-specific)
     settings_files = [
         "tests/test-fenix6-settings.json",
-        "tests/test-fenix7-settings.json", 
+        "tests/test-fenix7-settings.json",
     ]
-    
+
     settings_found = False
     for settings_file in settings_files:
         if os.path.exists(settings_file):
@@ -45,20 +45,20 @@ def test_widget_functionality():
                 break
             except:
                 print("   ⚠️  Could not parse settings file")
-    
+
     if not settings_found:
         print("⚠️  No settings files found, but not required for basic function")
-    
+
     # Test 3: Configuration validation
     config_file = "example-config.json"
     if os.path.exists(config_file):
         try:
             with open(config_file, 'r') as f:
                 config = json.load(f)
-            
+
             sequences = config.get('sequences', [])
             print(f"✅ Configuration: {len(sequences)} sequences")
-            
+
             # Test each sequence
             valid_keys = {'UP', 'DOWN', 'OK', 'BACK', 'LIGHT', 'MENU'}
             for i, seq in enumerate(sequences):
@@ -68,7 +68,7 @@ def test_widget_functionality():
                     print(f"   ⚠️  Sequence {i+1} has invalid keys: {invalid_keys}")
                 else:
                     print(f"   ✅ Sequence {i+1}: {' → '.join(seq_keys)}")
-                
+
                 # Check action format
                 action = seq.get('action', {})
                 if 'action' not in action:
@@ -80,7 +80,7 @@ def test_widget_functionality():
             return False
     else:
         print("❌ Example configuration not found")
-    
+
     # Test 4: Device compatibility
     device_files = [f for f in os.listdir('tests') if f.startswith('test-') and f.endswith('.json')]
     if device_files:
@@ -91,32 +91,32 @@ def test_widget_functionality():
             print(f"   ✅ {device_name}: {size:,} bytes")
     else:
         print("⚠️  No device-specific builds found")
-    
+
     # Test 5: Source code structure
-    source_files = ['GarminHAWidgetApp.mc', 'GarminHAWidgetView.mc', 'ConfigManager.mc', 
+    source_files = ['GarminHAWidgetApp.mc', 'GarminHAWidgetView.mc', 'ConfigManager.mc',
                    'KeySequenceHandler.mc', 'HomeAssistantClient.mc']
     missing_files = []
     for file in source_files:
         if not os.path.exists(f"source/{file}"):
             missing_files.append(file)
-    
+
     if missing_files:
         print(f"❌ Missing source files: {missing_files}")
         return False
     else:
         print(f"✅ Source code: {len(source_files)} files complete")
-    
+
     # Test 6: Battery optimization features
     optimization_features = []
-    
+
     # Check for caching in ConfigManager
     with open('source/ConfigManager.mc', 'r') as f:
         content = f.read()
         if 'Application.Storage' in content:
             optimization_features.append("Local storage caching")
-        if 'cache' in content.lower() and 'hour' in content.lower():
-            optimization_features.append("Timed cache expiration")
-    
+        if 'clearCache' in content:
+            optimization_features.append("Manual cache management")
+
     # Check for efficient rendering in View
     with open('source/GarminHAWidgetView.mc', 'r') as f:
         content = f.read()
@@ -126,14 +126,14 @@ def test_widget_functionality():
             optimization_features.append("Activity tracking")
         if 'cleanupTimers' in content:
             optimization_features.append("Timer cleanup")
-    
+
     if optimization_features:
         print(f"✅ Battery optimizations: {len(optimization_features)} features")
         for feature in optimization_features:
             print(f"   ✅ {feature}")
     else:
         print("⚠️  No battery optimizations detected")
-    
+
     print()
     print("🎯 Widget Functionality Summary:")
     print("   • Builds successfully for multiple devices")
@@ -141,7 +141,7 @@ def test_widget_functionality():
     print("   • Settings interface generated")
     print("   • Battery optimizations implemented")
     print("   • Ready for Connect IQ Store submission")
-    
+
     return True
 
 if __name__ == "__main__":

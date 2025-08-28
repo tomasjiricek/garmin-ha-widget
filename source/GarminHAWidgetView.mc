@@ -70,7 +70,36 @@ class GarminHAWidgetView extends WatchUi.View {
 
         // Draw status - only if changed
         if (!_statusText.equals(_lastStatusText)) {
-            dc.drawText(width / 2, height / 2 - 10, Graphics.FONT_TINY, _statusText, Graphics.TEXT_JUSTIFY_CENTER);
+            // Handle multi-line status messages
+            var statusLines = [];
+            var currentLine = "";
+            var newlineIndex = _statusText.find("\n");
+            
+            if (newlineIndex != null) {
+                // Has newlines, split manually
+                var remaining = _statusText;
+                while (remaining.length() > 0) {
+                    newlineIndex = remaining.find("\n");
+                    if (newlineIndex != null) {
+                        currentLine = remaining.substring(0, newlineIndex);
+                        remaining = remaining.substring(newlineIndex + 1, remaining.length());
+                    } else {
+                        currentLine = remaining;
+                        remaining = "";
+                    }
+                    statusLines.add(currentLine);
+                }
+            } else {
+                // No newlines, just one line
+                statusLines.add(_statusText);
+            }
+            
+            var lineHeight = 20; // Approximate line height for FONT_TINY
+            var startY = height / 2 - 10 - ((statusLines.size() - 1) * lineHeight / 2);
+            
+            for (var i = 0; i < statusLines.size(); i++) {
+                dc.drawText(width / 2, startY + (i * lineHeight), Graphics.FONT_TINY, statusLines[i], Graphics.TEXT_JUSTIFY_CENTER);
+            }
             _lastStatusText = _statusText;
         }
 
@@ -142,7 +171,7 @@ class GarminHAWidgetView extends WatchUi.View {
                 _keySequenceHandler.setSequences(_configManager.getSequences());
             }
         } else {
-            _statusText = "Error: Config empty or invalid";
+            _statusText = "Error:\nConfig empty or invalid";
         }
         _requestUpdateIfActive(_statusText, "");
     }
@@ -183,7 +212,7 @@ class GarminHAWidgetView extends WatchUi.View {
         }
 
         if (_configManager == null) {
-            _requestUpdateIfActive("Error: Manager not ready", "");
+            _requestUpdateIfActive("Error:\nManager not ready", "");
             return;
         }
 

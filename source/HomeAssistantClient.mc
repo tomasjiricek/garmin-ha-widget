@@ -38,12 +38,26 @@ class HomeAssistantClient {
         var haUrl = _configManager.getHaUrl();
 
         if (haUrl == null) {
-            _statusCallback.invoke("Error: HA URL not configured");
+            _isRequestInProgress = false;
+            if (_callback != null) {
+                var callbackMethod = _callback;
+                _callback = null;
+                _statusCallback = null;
+                callbackMethod.invoke(false);
+            }
+            _processNextRequest();
             return;
         }
 
         if (apiKey == null) {
-            _statusCallback.invoke("Error: API key not configured");
+            _isRequestInProgress = false;
+            if (_callback != null) {
+                var callbackMethod = _callback;
+                _callback = null;
+                _statusCallback = null;
+                callbackMethod.invoke(false);
+            }
+            _processNextRequest();
             return;
         }
 

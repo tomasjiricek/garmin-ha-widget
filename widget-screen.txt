@@ -1,19 +1,22 @@
-🎯 GARMIN HOME ASSISTANT WIDGET - SCREEN MOCKUP
-==================================================
+🎯 GARMIN HOME ASSISTANT WIDGET - ACCURATE SCREEN MOCKUP
+===========================================================
 
 📱 WIDGET DISPLAY (240x240px typical Garmin screen):
 
 ┌────────────────────────────────────────────────┐
 │                                                │
-│           HOME ASSISTANT WIDGET                │
-│                                                │
-│  Battery: 85% [████████░░]                     │
-│                                                │
-│  Status: Ready                                 │
+│                  HASSequence                   │
 │                                                │
 │                                                │
-│  Keys: UP DOWN OK BACK LIGHT MENU             │
-│  Press MENU for options                       │
+│                                                │
+│                                                │
+│                     Ready                      │
+│                                                │
+│                                                │
+│                                                │
+│                                                │
+│                                                │
+│                                                │
 │                                                │
 └────────────────────────────────────────────────┘
 
@@ -21,44 +24,46 @@
 
 1. READY STATE:
    ┌─────────────────┐
-   │  Status: Ready  │
+   │     Ready       │
    │                 │
    └─────────────────┘
 
 2. SEQUENCE INPUT:
    ┌─────────────────┐
-   │  Status: Ready  │
-   │  Seq: UP → DOWN │
+   │     Ready       │
+   │    UP-DOWN      │
    └─────────────────┘
 
-3. SENDING ACTION:
+3. ACTION COMPLETED:
    ┌─────────────────┐
-   │  Sending...     │
-   │  UP→DOWN→OK     │
-   └─────────────────┘
-
-4. ACTION COMPLETED:
-   ┌─────────────────┐
-   │  Action Sent    │
+   │  Action sent    │
    │                 │
    └─────────────────┘
 
-🔑 CONFIGURED KEY SEQUENCES:
-  1. 🟢 lights_toggle: UP → DOWN → OK
-  2. 🟢 lock_doors: LIGHT → LIGHT → OK  
-  3. 🟡 garage_door: UP → UP → DOWN → OK
-  4. 🟢 goodnight_scene: MENU → DOWN → OK
-  5. 🟢 emergency_lights: LIGHT → LIGHT
-  6. 🟢 quick_toggle: OK → OK
+4. CONFIGURATION ERROR:
+   ┌─────────────────┐
+   │     Error:      │
+   │ Config empty    │
+   │   or invalid    │
+   └─────────────────┘
 
-🔋 BATTERY OPTIMIZATIONS:
-  • Smart 1-hour caching
-  • Lazy component initialization  
-  • Efficient update rendering
-  • Power-aware timer management
-  • Expected impact: <2% daily drain
+🔑 CONFIGURED KEY SEQUENCES:
+  1. lights_toggle: UP-DOWN-OK → light.toggle (light.living_room)
+  2. lock_doors: LIGHT-LIGHT-OK → script.turn_on (script.lock_all_doors)
+  3. garage_door: UP-UP-DOWN-OK → cover.toggle (cover.garage_door)
+  4. goodnight_scene: MENU-DOWN-OK → scene.turn_on (scene.goodnight)
+  5. emergency_lights: LIGHT-LIGHT → script.turn_on (script.emergency_lighting)
+  6. quick_toggle: OK-OK → switch.toggle (switch.living_room_fan)
+
+� WIDGET CHARACTERISTICS:
+  • Simple text-based layout matching Garmin standards
+  • Title "HASSequence" displayed at top center
+  • Status messages shown in center of screen
+  • Active key sequences displayed below status
+  • No battery indicators or decorative elements
+  • Clean, minimal interface design
 
 📦 PACKAGE DETAILS:
-  • File: garmin-ha-widget.iq (328KB)
-  • Devices: Fenix 6/7
+  • File: garmin-ha-widget.iq (629KB)
+  • Devices: Fenix 5/6/7 Series
   • Format: Connect IQ Store ready

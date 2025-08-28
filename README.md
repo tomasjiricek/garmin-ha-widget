@@ -2,16 +2,17 @@
 
 A **battery-optimized** Garmin Connect IQ widget that allows you to trigger Home Assistant actions using key sequences on your watch.
 
-## 🔋 Battery-First Design
+## 🔋 Battery Optimizations
 
-This widget is engineered for **maximum battery efficiency**:
+The widget implements practical battery-saving features:
 - **Lazy initialization** - Components load only when needed
-- **Smart caching** - 1-hour cache reduces network usage by 92%
-- **Efficient rendering** - Only redraws when content changes
-- **Power-aware timers** - Optimized timeout handling
-- **Idle optimization** - Zero processing when widget is hidden
+- **Smart caching** - Configuration cached until manually cleared
+- **Efficient rendering** - Only updates when content changes
+- **Activity-aware processing** - No processing when widget hidden
+- **Fixed 5-second timeouts** - Prevents indefinite timer drain
+- **Network optimization** - Connection management and request queuing
 
-**Expected battery impact: < 2% additional daily drain for normal usage**
+**Expected battery impact: Minimal for typical usage**
 
 ## ✨ Features
 
@@ -19,11 +20,11 @@ This widget is engineered for **maximum battery efficiency**:
 - Load configuration from a remote JSON URL
 - Listen for configurable key sequences (UP, DOWN, OK, BACK, LIGHT, MENU)
 - Send authenticated actions to Home Assistant
-- Configurable timeout between key presses (optimized for battery)
+- Configurable key sequences for Home Assistant actions
 - Support for multiple sequences
 
 ### Smart Power Management
-- **Intelligent Configuration Caching**: Automatically caches config locally for 1 hour
+- **Intelligent Configuration Caching**: Automatically caches config locally for offline use
 - **Manual Config Refresh**: Force reload configuration from the menu
 - **Automatic HA URL Detection**: Derives Home Assistant URL from config URL
 - **Offline Capability**: Works with cached config when network unavailable
@@ -68,7 +69,6 @@ This widget is engineered for **maximum battery efficiency**:
   "sequences": [
     {
       "id": "lights_toggle",
-      "timeout": 2000,
       "sequence": ["UP", "DOWN", "OK"],
       "action": {
         "entity": "light.living_room",
@@ -77,7 +77,6 @@ This widget is engineered for **maximum battery efficiency**:
     },
     {
       "id": "quick_action",
-      "timeout": 1500,
       "sequence": ["OK", "OK"],
       "action": {
         "entity": "switch.fan",
@@ -90,10 +89,9 @@ This widget is engineered for **maximum battery efficiency**:
 
 ### Battery Optimization Tips
 
-✅ **Use timeouts ≥ 1500ms** - Better battery life  
-✅ **Keep sequences short** (2-4 keys) - Less processing  
-✅ **Limit to 6-8 sequences** - Easier to memorize, better performance  
-✅ **Use reliable, fast servers** - Reduces network timeouts  
+✅ **Keep sequences short** (2-4 keys) - Less processing
+✅ **Limit to 6-8 sequences** - Easier to memorize, better performance
+✅ **Use reliable, fast servers** - Reduces network timeouts
 
 ## 📱 Usage
 
@@ -102,7 +100,7 @@ This widget is engineered for **maximum battery efficiency**:
 - **Settings**: Access Connect IQ configuration
 
 ### Smart Behaviors
-- **Persistent Caching**: Config cached forever until manually refreshed
+- **Persistent Caching**: Config cached indefinitely until manually refreshed
 - **Offline Mode**: Falls back to cached config if network fails
 - **Auto HA URL**: Derives `https://yourdomain.com` from config URL automatically
 - **Battery Aware**: Only processes when widget is visible
@@ -121,7 +119,6 @@ This widget is engineered for **maximum battery efficiency**:
   "sequences": [
     {
       "id": "emergency_only",
-      "timeout": 5000,
       "sequence": ["OK"],
       "action": {
         "entity": "script.emergency_lighting",
@@ -138,7 +135,6 @@ This widget is engineered for **maximum battery efficiency**:
   "sequences": [
     {
       "id": "goodnight",
-      "timeout": 3000,
       "sequence": ["MENU", "DOWN", "OK"],
       "action": {
         "entity": "scene.goodnight",
@@ -155,23 +151,25 @@ This widget is engineered for **maximum battery efficiency**:
 - **`test.sh`** - Run comprehensive tests and validation
 - **`validate-config.py`** - Configuration validator with battery tips
 - **`STORE-SUBMISSION.md`** - Connect IQ Store submission guide
-- **`BATTERY-OPTIMIZATION.md`** - Detailed battery optimization guide
 
 ## 📊 Battery Performance
 
-| Usage Pattern | Additional Daily Drain |
-|---------------|----------------------|
-| Idle (widget installed) | < 1% |
-| Light usage (1-5 sequences/day) | < 2% |
-| Heavy usage (20+ sequences/day) | < 5% |
+| Usage Pattern | Estimated Impact |
+|---------------|------------------|
+| Idle (widget installed) | Minimal |
+| Light usage (1-5 sequences/day) | Low |
+| Heavy usage (20+ sequences/day) | Moderate |
+
+*Impact varies by device, network conditions, and usage patterns*
 
 ## 🎯 Supported Devices
 
-- Fenix 6/7 series
+- Fenix 5 Series (5S Plus, 5X, 5X Plus)
+- Fenix 6 Series (6, 6 Pro, 6S, 6S Pro, 6X Pro)
+- Fenix 7 Series (7, 7 Pro, 7 Pro No WiFi, 7S, 7S Pro, 7X, 7X Pro, 7X Pro No WiFi)
 
 ## 📚 Documentation
 
-- **[Battery Optimization Guide](BATTERY-OPTIMIZATION.md)** - Maximize battery life
 - **[Store Submission Guide](STORE-SUBMISSION.md)** - Connect IQ Store process
 - **[Deployment Guide](DEPLOYMENT.md)** - Installation and setup instructions
 
@@ -188,7 +186,7 @@ Upload the widget package `dist/garmin-ha-widget.iq` directly to: https://develo
 
 Use the documentation files in the project root:
 - `STORE-DESCRIPTION.md` for store listing
-- `PRIVACY-POLICY.md` for privacy policy  
+- `PRIVACY-POLICY.md` for privacy policy
 - `resources/drawables/launcher_icon.png` for app icon
 
 ## 🎉 Ready for Production

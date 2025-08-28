@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Garmin HA Widget Test Script
+# Garmin HASSequence Test Script
 # Runs comprehensive tests on the widget
 
 set -e

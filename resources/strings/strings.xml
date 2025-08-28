@@ -1,5 +1,5 @@
 <resources>
-    <string id="AppName">HA Widget</string>
+    <string id="AppName">HASSequence</string>
     <string id="ConfigLoading">Loading...</string>
     <string id="ConfigError">Config Error</string>
     <string id="Ready">Ready</string>
