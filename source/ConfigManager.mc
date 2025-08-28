@@ -8,133 +8,84 @@ class ConfigManager {
     private var _configUrl as Lang.String?;
     private var _apiKey as Lang.String?;
     private var _haUrl as Lang.String?;
-    private var _callback as Lang.Method?;
+    private var _callbackOnConfigProcessed as Lang.Method?;
     private var _cachedConfig as Lang.Dictionary?;
     private var _lastConfigLoad as Lang.Number;
     private var _isLoadingConfig as Lang.Boolean;
-    private var _configCallbacks as Lang.Array;
 
     function initialize() {
         _sequences = [];
         _cachedConfig = null;
         _lastConfigLoad = 0;
         _isLoadingConfig = false;
-        _configCallbacks = [];
         loadSettings();
-        loadCachedConfig();
     }
 
     function loadSettings() as Void {
         _configUrl = Application.Properties.getValue("ConfigUrl") as Lang.String;
         _apiKey = Application.Properties.getValue("ApiKey") as Lang.String;
         _haUrl = Application.Properties.getValue("HaUrl") as Lang.String;
-        
+
         // Validate settings - ensure they're not empty or default values
         if (_configUrl == null || _configUrl.equals("") || _configUrl.equals("https://example.com/ha-config.json")) {
             _configUrl = null;
         }
-        
+
         if (_apiKey == null || _apiKey.equals("") || _apiKey.equals("your_ha_api_key_here")) {
             _apiKey = null;
         }
-        
+
         if (_haUrl == null || _haUrl.equals("") || _haUrl.equals("https://your-ha-instance.com")) {
             _haUrl = null;
-            // Try to derive from config URL if available
             deriveHaUrlFromConfig();
         }
     }
 
     function deriveHaUrlFromConfig() as Void {
-        if (_configUrl != null && !_configUrl.equals("") && !_configUrl.equals("https://example.com/ha-config.json")) {
+        if (_configUrl != null) {
             var protocolEnd = _configUrl.find("://");
             if (protocolEnd != null) {
                 var domainStart = protocolEnd + 3;
-                var pathStart = _configUrl.find("/");
-                // Check if the slash is after the domain part
-                if (pathStart != null && pathStart > domainStart) {
-                    _haUrl = _configUrl.substring(0, pathStart);
+                var domainPart = _configUrl.substring(domainStart, _configUrl.length());
+                var pathStart = domainPart.find("/");
+
+                if (pathStart != null) {
+                    _haUrl = _configUrl.substring(0, domainStart + pathStart);
                 } else {
-                    // No path found after domain, use the whole URL
+                    // No path, use entire URL as base
                     _haUrl = _configUrl;
                 }
             }
         }
     }
 
-    function loadCachedConfig() as Void {
+    private function loadCachedConfig() as Lang.Boolean {
         var cachedData = Application.Storage.getValue("cachedConfig");
         var lastLoad = Application.Storage.getValue("lastConfigLoad");
-        
+
         if (cachedData != null && lastLoad != null) {
             _cachedConfig = cachedData as Lang.Dictionary;
             _lastConfigLoad = lastLoad as Lang.Number;
-            parseConfig(_cachedConfig);
+            return parseConfig(_cachedConfig);
         }
+
+        return false;
     }
 
-    function saveCachedConfig(data as Lang.Dictionary) as Void {
+    private function saveCachedConfig(data as Lang.Dictionary) as Void {
         Application.Storage.setValue("cachedConfig", data);
         Application.Storage.setValue("lastConfigLoad", System.getTimer());
         _cachedConfig = data;
         _lastConfigLoad = System.getTimer();
     }
 
-    function loadConfig(callback as Lang.Method) as Void {
-        // If config is already loading, queue the callback
-        if (_isLoadingConfig) {
-            _configCallbacks.add(callback);
-            return;
-        }
-        
-        _callback = callback;
-        
-        if (_configUrl == null || _configUrl.equals("https://example.com/ha-config.json")) {
-            // Use cached config if available
-            if (_cachedConfig != null) {
-                _callback.invoke(true);
-                return;
-            }
-            _callback.invoke(false);
-            return;
-        }
-
-        // Use cached config if available
-        if (_cachedConfig != null) {
-            _callback.invoke(true);
-            return;
-        }
-
-        // No cache available, load fresh
-        loadFreshConfig();
-    }
-
-    function refreshConfig(callback as Lang.Method) as Void {
-        // If config is already loading, queue the callback
-        if (_isLoadingConfig) {
-            _configCallbacks.add(callback);
-            return;
-        }
-        
-        _callback = callback;
-        
-        if (_configUrl == null || _configUrl.equals("https://example.com/ha-config.json")) {
-            _callback.invoke(false);
-            return;
-        }
-
-        // Always load fresh when refreshing
-        loadFreshConfig();
-    }
-
-    function loadFreshConfig() as Void {
+    private function requestConfig(callback as Lang.Method) as Void {
         // Prevent multiple concurrent config loads
         if (_isLoadingConfig) {
             return;
         }
-        
+
         _isLoadingConfig = true;
-        
         // Always load fresh config from server
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
@@ -148,52 +99,75 @@ class ConfigManager {
         Communications.makeWebRequest(_configUrl, null, options, method(:onConfigReceived));
     }
 
+    function loadConfig(callback as Lang.Method) as Void {
+        _callbackOnConfigProcessed = callback;
+
+        if (loadCachedConfig()) {
+            _callbackOnConfigProcessed.invoke(true);
+            return;
+        }
+
+        // No cached config, or the config is invalid. Clear the cache to be sure it's not used
+        clearCache();
+
+        if (_configUrl == null) {
+            _callbackOnConfigProcessed.invoke(false);
+            return;
+        }
+
+        requestConfig(_callbackOnConfigProcessed);
+    }
+
     function onConfigReceived(responseCode as Lang.Number, data as Lang.Dictionary?) as Void {
         _isLoadingConfig = false;
         var success = false;
-        
+
         if (responseCode == 200 && data != null) {
-            parseConfig(data);
-            saveCachedConfig(data);
-            success = true;
+            var isValid = parseConfig(data);
+            if (isValid) {
+                saveCachedConfig(data);
+            }
+            success = isValid;
         } else {
             // If fresh request failed but we have cached config, use that
             if (_cachedConfig != null) {
                 success = true;
             }
         }
-        
-        // Call the primary callback
-        if (_callback != null) {
-            _callback.invoke(success);
+
+        if (_callbackOnConfigProcessed != null) {
+            _callbackOnConfigProcessed.invoke(success);
         }
-        
-        // Call any queued callbacks
-        for (var i = 0; i < _configCallbacks.size(); i++) {
-            var callback = _configCallbacks[i] as Lang.Method;
-            callback.invoke(success);
-        }
-        _configCallbacks = [];
     }
 
-    function parseConfig(data as Lang.Dictionary) as Void {
+    private function initialConfigProcessed(success as Lang.Boolean) as Void {
+        if (success) {
+            // Handle successful config load
+        } else {
+            // Handle failed config load
+        }
+    }
+
+    private function parseConfig(data as Lang.Dictionary) as Lang.Boolean {
         _sequences = [];
-        
-        if (data.hasKey("sequences")) {
+        try {
             var sequences = data["sequences"] as Lang.Array;
             for (var i = 0; i < sequences.size(); i++) {
                 var seq = sequences[i] as Lang.Dictionary;
                 if (seq.hasKey("id") && seq.hasKey("sequence") && seq.hasKey("action")) {
                     var sequence = {
                         "id" => seq["id"],
-                        "timeout" => seq.hasKey("timeout") ? seq["timeout"] : 1000,
                         "sequence" => seq["sequence"],
                         "action" => seq["action"]
                     };
                     _sequences.add(sequence);
                 }
             }
+        } catch (ex) {
+            return false;
         }
+
+        return _sequences.size() > 0;
     }
 
     function getSequences() as Lang.Array {
@@ -212,10 +186,6 @@ class ConfigManager {
         return _configUrl;
     }
 
-    function hasCache() as Lang.Boolean {
-        return _cachedConfig != null;
-    }
-
     function getCacheAge() as Lang.Number {
         if (_lastConfigLoad > 0) {
             return System.getTimer() - _lastConfigLoad;
@@ -230,13 +200,7 @@ class ConfigManager {
         } catch (ex) {
             // No-op
         }
-        _cachedConfig = null;
-        _lastConfigLoad = 0;
-        _sequences = [];
-        _apiKey = null;
-        _haUrl = null;
-        _isLoadingConfig = false;
-        _configCallbacks = [];
 
+        initialize(); // Reload settings
     }
 }

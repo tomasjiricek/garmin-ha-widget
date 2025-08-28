@@ -1,5 +1,5 @@
 <properties>
-    <property id="ConfigUrl" type="string"></property>
-    <property id="ApiKey" type="string"></property>
-    <property id="HaUrl" type="string"></property>
+    <property id="ConfigUrl" type="string">https://example.com/ha-config.json</property>
+    <property id="ApiKey" type="string">your_ha_api_key_here</property>
+    <property id="HaUrl" type="string">https://your-ha-instance.com</property>
 </properties>

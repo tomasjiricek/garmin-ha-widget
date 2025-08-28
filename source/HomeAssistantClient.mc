@@ -29,44 +29,27 @@ class HomeAssistantClient {
         }
     }
 
-    function _executeAction(action as Lang.Dictionary, callback as Lang.Method, statusCallback as Lang.Method?) as Void {
+    function _executeAction(action as Lang.Dictionary, callback as Lang.Method, statusCallback as Lang.Method) as Void {
         _callback = callback;
         _statusCallback = statusCallback;
         _isRequestInProgress = true;
 
-        // Notify view that we're actually sending now
-        if (_statusCallback != null) {
-            _statusCallback.invoke("Sending...");
-        }
-
         var apiKey = _configManager.getApiKey();
         var haUrl = _configManager.getHaUrl();
-        
-        // If no HA URL configured, try to derive from config URL
-        if (haUrl == null || haUrl.equals("https://your-ha-instance.com") || haUrl.equals("")) {
-            var configUrl = _configManager.getConfigUrl();
-            if (configUrl != null && !configUrl.equals("https://example.com/ha-config.json")) {
-                haUrl = deriveHaUrlFromConfigUrl(configUrl);
-            }
+
+        if (haUrl == null) {
+            _statusCallback.invoke("Error: HA URL not configured");
+            return;
         }
-        
-        if (apiKey == null || haUrl == null || 
-            apiKey.equals("your_ha_api_key_here") || 
-            haUrl.equals("https://your-ha-instance.com")) {
-            _isRequestInProgress = false;
-            if (_callback != null) {
-                var callbackMethod = _callback;
-                _callback = null;
-                _statusCallback = null;
-                callbackMethod.invoke(false);
-            }
-            _processNextRequest();
+
+        if (apiKey == null) {
+            _statusCallback.invoke("Error: API key not configured");
             return;
         }
 
         var entity = action["entity"] as Lang.String;
         var actionType = action["action"] as Lang.String;
-        
+
         // Parse action type (e.g., "script.turn_on" -> domain: "script", service: "turn_on")
         var dotIndex = actionType.find(".");
         if (dotIndex == null) {
@@ -80,16 +63,16 @@ class HomeAssistantClient {
             _processNextRequest();
             return;
         }
-        
+
         var domain = actionType.substring(0, dotIndex);
         var service = actionType.substring(dotIndex + 1, actionType.length());
-        
+
         var url = haUrl + "/api/services/" + domain + "/" + service;
-        
+
         var payload = {
             "entity_id" => entity
         };
-        
+
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_POST,
             :headers => {
@@ -99,24 +82,24 @@ class HomeAssistantClient {
                 "User-Agent" => "GarminHAWidget/1.0" // Identify requests for potential server optimizations
             },
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON,
-            :timeout => 10 // 10 second timeout for battery optimization
+            :timeout => 5 // 5 second timeout for battery optimization
         };
 
-        // Battery optimization: Use shorter timeout for quicker failures
+        _statusCallback.invoke("Sending...");
         Communications.makeWebRequest(url, payload, options, method(:onActionResponse));
     }
 
     function onActionResponse(responseCode as Lang.Number, data as Lang.Dictionary?) as Void {
         var success = (responseCode >= 200 && responseCode < 300);
         _isRequestInProgress = false;
-        
+
         if (_callback != null) {
             var callbackMethod = _callback;
             _callback = null; // Clear callback before invoking to prevent issues
             _statusCallback = null; // Clear status callback too
             callbackMethod.invoke(success);
         }
-        
+
         // Process next request in queue if any
         _processNextRequest();
     }
@@ -125,28 +108,12 @@ class HomeAssistantClient {
         if (_requestQueue.size() > 0) {
             var nextRequest = _requestQueue[0] as Lang.Dictionary;
             _requestQueue = _requestQueue.slice(1, _requestQueue.size());
-            
+
             var action = nextRequest["action"] as Lang.Dictionary;
             var callback = nextRequest["callback"] as Lang.Method;
             var statusCallback = nextRequest["statusCallback"] as Lang.Method?;
-            
+
             _executeAction(action, callback, statusCallback);
         }
-    }
-
-    function deriveHaUrlFromConfigUrl(configUrl as Lang.String) as Lang.String? {
-        var protocolEnd = configUrl.find("://");
-        if (protocolEnd != null) {
-            var domainStart = protocolEnd + 3;
-            var domainPart = configUrl.substring(domainStart, configUrl.length());
-            var pathStart = domainPart.find("/");
-            if (pathStart != null) {
-                return configUrl.substring(0, domainStart + pathStart);
-            } else {
-                // No path, use entire URL as base
-                return configUrl;
-            }
-        }
-        return null;
     }
 }
