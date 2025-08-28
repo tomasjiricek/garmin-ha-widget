@@ -85,6 +85,15 @@ class ConfigManager {
             return;
         }
 
+        // Check if config URL is available
+        if (_configUrl == null) {
+            _isLoadingConfig = false;
+            if (_callbackOnConfigProcessed != null) {
+                _callbackOnConfigProcessed.invoke(false);
+            }
+            return;
+        }
+
         _isLoadingConfig = true;
         // Always load fresh config from server
         var options = {

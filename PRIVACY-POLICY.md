@@ -12,7 +12,7 @@ The widget stores the following data locally on your Garmin device:
 - **Configuration URL**: The URL you provide to load sequence definitions
 - **API Token**: Your Home Assistant long-lived access token
 - **Home Assistant Server URL**: Your HA server endpoint
-- **Cached Configuration**: Temporarily cached sequence definitions (expires after 1 hour)
+- **Cached Configuration**: Locally stored sequence definitions (persists until manually cleared)
 
 ### Network Communication
 The widget makes network requests only to:
@@ -23,7 +23,7 @@ The widget makes network requests only to:
 - All sensitive data (API tokens) is stored securely on your device using Garmin's Application.Storage
 - Network communications use HTTPS when available
 - No data is transmitted to our servers or any third-party analytics services
-- Configuration cache is automatically cleared after 1 hour
+- Configuration cache persists until manually cleared
 
 ### Third-Party Services
 This widget communicates with:
@@ -34,7 +34,7 @@ We have no control over and assume no responsibility for the content, privacy po
 
 ### Data Retention
 - Configuration data persists until you uninstall the widget or clear settings
-- Cached data automatically expires after 1 hour
+- Cached data persists until manually cleared
 - No data is retained by us - everything stays on your device
 
 ### Changes to Privacy Policy
