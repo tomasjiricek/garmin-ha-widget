@@ -9,10 +9,6 @@ function popView() as Void {
     WatchUi.popView(WatchUi.SLIDE_RIGHT);
 }
 
-function pushView(view as WatchUi.Views, delegate as WatchUi.InputDelegates) as Void {
-    WatchUi.pushView(view, delegate, WatchUi.SLIDE_RIGHT);
-}
-
 class GarminHAWidgetView extends WatchUi.View {
     private var _configManager as ConfigManager?;
     private var _keySequenceHandler as KeySequenceHandler?;
@@ -257,7 +253,7 @@ class GarminHAWidgetDelegate extends WatchUi.BehaviorDelegate {
     }
 
     function onMenu() as Lang.Boolean {
-        pushView(new Rez.Menus.MainMenu(), new GarminHAWidgetMenuDelegate(_view));
+        WatchUi.pushView(new Rez.Menus.MainMenu(), new GarminHAWidgetMenuDelegate(_view),  WatchUi.SLIDE_RIGHT);
         return true;
     }
 }
