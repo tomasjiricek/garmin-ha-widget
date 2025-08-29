@@ -29,7 +29,7 @@ class GarminHAWidgetView extends WatchUi.View {
         _needsRedraw = true;
         _isActive = false;
 
-        _initializeComponentsIfNeeded();
+        initializeComponentsIfNeeded();
     }
 
     function onLayout(dc as Graphics.Dc) as Void {
@@ -38,7 +38,7 @@ class GarminHAWidgetView extends WatchUi.View {
 
     function onShow() as Void {
         _isActive = true;
-        _initializeComponentsIfNeeded();
+        initializeComponentsIfNeeded();
         _needsRedraw = true;
         WatchUi.requestUpdate();
     }
@@ -117,7 +117,7 @@ class GarminHAWidgetView extends WatchUi.View {
     }
 
     function onStatusUpdate(status as Lang.String) as Void {
-        _requestUpdateIfActive(status, "");
+        requestUpdateIfActive(status, "");
     }
 
     function updateSequenceDisplay(sequence as Lang.Array) as Void {
@@ -133,24 +133,24 @@ class GarminHAWidgetView extends WatchUi.View {
 
         // Only update if sequence actually changed
         if (!newSequenceText.equals(_sequenceText)) {
-            _requestUpdateIfActive(_statusText, newSequenceText);
+            requestUpdateIfActive(_statusText, newSequenceText);
         }
     }
 
     function clearCache() as Void {
         var reloadTimer = new Timer.Timer();
-        reloadTimer.start(method(:_clearCacheAndReloadConfig), 500, false);
+        reloadTimer.start(method(:clearCacheAndReloadConfig), 500, false);
     }
 
     function getKeySequenceHandler() as KeySequenceHandler? {
         return _keySequenceHandler;
     }
 
-    private function _resetStatus() as Void {
-        _requestUpdateIfActive("Ready", "");
+    function resetStatus() as Void {
+        requestUpdateIfActive("Ready", "");
     }
 
-    private function _initializeComponentsIfNeeded() as Void {
+    function initializeComponentsIfNeeded() as Void {
         if (_configManager == null) {
             var app = getApp();
             _configManager = app.getConfigManager();
@@ -159,14 +159,14 @@ class GarminHAWidgetView extends WatchUi.View {
             _haClient = new HomeAssistantClient();
 
             // Set up callback for sequence completion
-            _keySequenceHandler.setSequenceCallback(method(:_onSequenceCompleted));
+            _keySequenceHandler.setSequenceCallback(method(:onSequenceCompleted));
 
             // Load configuration only when widget becomes active
-            _configManager.loadConfig(method(:_onConfigLoaded));
+            _configManager.loadConfig(method(:onConfigLoaded));
         }
     }
 
-    private function _onConfigLoaded(success as Lang.Boolean) as Void {
+    function onConfigLoaded(success as Lang.Boolean) as Void {
         if (success) {
             _statusText = "Ready";
             if (_keySequenceHandler != null) {
@@ -177,32 +177,32 @@ class GarminHAWidgetView extends WatchUi.View {
         }
 
         if (_isActive) {
-            _requestUpdateIfActive(_statusText, "");
+            requestUpdateIfActive(_statusText, "");
         }
     }
 
-    private function _onSequenceCompleted(sequenceId as Lang.String, action as Lang.Dictionary) as Void {
+    function onSequenceCompleted(sequenceId as Lang.String, action as Lang.Dictionary) as Void {
         if (!_isActive) { return; } // Don't process if widget not visible
 
         if (_haClient != null) {
-            _haClient.sendAction(action, method(:_onActionResult), method(:onStatusUpdate));
+            _haClient.sendAction(action, method(:onActionResult), method(:onStatusUpdate));
         }
     }
 
-    private function _onActionResult(success as Lang.Boolean) as Void {
+    function onActionResult(success as Lang.Boolean) as Void {
         if (!_isActive) { return; } // Don't update if widget not visible
 
         if (success) {
-           _requestUpdateIfActive("Action sent", "");
+           requestUpdateIfActive("Action sent", "");
         } else {
-            _requestUpdateIfActive("Error\nSending action\nfailed", "");
+            requestUpdateIfActive("Error\nSending action\nfailed", "");
         }
 
         var timer = new Timer.Timer();
-        timer.start(method(:_resetStatus), 3000, false);
+        timer.start(method(:resetStatus), 3000, false);
     }
 
-    private function _requestUpdateIfActive(status as Lang.String, sequence as Lang.String) as Void {
+    function requestUpdateIfActive(status as Lang.String, sequence as Lang.String) as Void {
         if (_isActive) {
             _statusText = status;
             _sequenceText = sequence;
@@ -210,14 +210,14 @@ class GarminHAWidgetView extends WatchUi.View {
         }
     }
 
-    private function _clearCacheAndReloadConfig() as Void {
+    function clearCacheAndReloadConfig() as Void {
         if (_configManager == null) {
             // Initialize config manager
-            _initializeComponentsIfNeeded();
+            initializeComponentsIfNeeded();
         }
 
         if (_configManager == null) {
-            _requestUpdateIfActive("Error:\nManager not ready", "");
+            requestUpdateIfActive("Error:\nManager not ready", "");
             return;
         }
 
@@ -226,7 +226,7 @@ class GarminHAWidgetView extends WatchUi.View {
             _keySequenceHandler.initialize(); // Reset
         }
 
-        _configManager.loadConfig(method(:_onConfigLoaded));
+        _configManager.loadConfig(method(:onConfigLoaded));
     }
 }
 
