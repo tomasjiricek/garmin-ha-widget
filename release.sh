@@ -147,14 +147,15 @@ echo "🏷️  Renamed IQ package: $IQ_PACKAGE → $VERSIONED_IQ"
 
 # Update manifest version if needed
 if [ -z "$LATEST_TAG" ] || [ "$NEW_VERSION" != "$LATEST_TAG" ]; then
-    # Update manifest.xml with new version
-    sed -i "s/version=\"[^\"]*\"/version=\"$NEW_VERSION\"/" "$MANIFEST_FILE"
+    # Update manifest.xml with new version (only in iq:application tag)
+    sed -i "s/<iq:application\([^>]*\)version=\"[^\"]*\"/<iq:application\1version=\"$NEW_VERSION\"/" "$MANIFEST_FILE"
     echo "📝 Updated manifest.xml version to: $NEW_VERSION"
 fi
 
 # Commit changes
 COMMIT_MESSAGE="release $NEW_VERSION"
 git add "$VERSIONED_IQ" "$MANIFEST_FILE"
+git add "$DIST_DIR"
 git commit -m "$COMMIT_MESSAGE"
 echo "💾 Committed changes: $COMMIT_MESSAGE"
 
@@ -164,8 +165,8 @@ echo "🏷️  Created git tag: $NEW_VERSION"
 
 # Push branch and tag
 echo "📤 Pushing branch and tag..."
-git push origin "$RELEASE_BRANCH"
-git push origin "$NEW_VERSION"
+git push
+git push origin --tags
 
 echo ""
 echo "🎉 RELEASE COMPLETE!"
