@@ -28,6 +28,8 @@ class GarminHAWidgetView extends WatchUi.View {
         _lastSequenceText = "";
         _needsRedraw = true;
         _isActive = false;
+
+        _initializeComponentsIfNeeded();
     }
 
     function onLayout(dc as Graphics.Dc) as Void {
@@ -74,7 +76,7 @@ class GarminHAWidgetView extends WatchUi.View {
             var statusLines = [];
             var currentLine = "";
             var newlineIndex = _statusText.find("\n");
-            
+
             if (newlineIndex != null) {
                 // Has newlines, split manually
                 var remaining = _statusText;
@@ -93,10 +95,10 @@ class GarminHAWidgetView extends WatchUi.View {
                 // No newlines, just one line
                 statusLines.add(_statusText);
             }
-            
+
             var lineHeight = 20; // Approximate line height for FONT_TINY
             var startY = height / 2 - 10 - ((statusLines.size() - 1) * lineHeight / 2);
-            
+
             for (var i = 0; i < statusLines.size(); i++) {
                 dc.drawText(width / 2, startY + (i * lineHeight), Graphics.FONT_TINY, statusLines[i], Graphics.TEXT_JUSTIFY_CENTER);
             }
@@ -150,7 +152,9 @@ class GarminHAWidgetView extends WatchUi.View {
 
     private function _initializeComponentsIfNeeded() as Void {
         if (_configManager == null) {
-            _configManager = new ConfigManager();
+            var app = getApp();
+            _configManager = app.getConfigManager();
+
             _keySequenceHandler = new KeySequenceHandler();
             _haClient = new HomeAssistantClient();
 
@@ -163,8 +167,6 @@ class GarminHAWidgetView extends WatchUi.View {
     }
 
     private function _onConfigLoaded(success as Lang.Boolean) as Void {
-        if (!_isActive) { return; } // Don't update if widget not visible
-
         if (success) {
             _statusText = "Ready";
             if (_keySequenceHandler != null) {
@@ -173,7 +175,10 @@ class GarminHAWidgetView extends WatchUi.View {
         } else {
             _statusText = "Error:\nConfig empty or invalid";
         }
-        _requestUpdateIfActive(_statusText, "");
+
+        if (_isActive) {
+            _requestUpdateIfActive(_statusText, "");
+        }
     }
 
     private function _onSequenceCompleted(sequenceId as Lang.String, action as Lang.Dictionary) as Void {

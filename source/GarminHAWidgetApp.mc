@@ -3,9 +3,15 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 
 class GarminHAWidgetApp extends Application.AppBase {
+    private var _configManager as ConfigManager?;
 
     function initialize() {
         AppBase.initialize();
+
+        // Initialize ConfigManager at app level to make settings accessible
+        // in Connect IQ mobile app before widget is opened
+        _configManager = new ConfigManager();
+        _configManager.loadSettings();
     }
 
     function onStart(state as Lang.Dictionary?) as Void {
@@ -24,6 +30,10 @@ class GarminHAWidgetApp extends Application.AppBase {
     function onSettingsChanged() as Void {
         // Request update when settings change
         WatchUi.requestUpdate();
+    }
+
+    function getConfigManager() as ConfigManager? {
+        return _configManager;
     }
 }
 
