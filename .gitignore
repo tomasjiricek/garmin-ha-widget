@@ -18,9 +18,8 @@ monkeyc.log
 */gen/
 */internal-mir/
 */external-mir/
-dist/
+bin/
 *.prg
-*.iq
 *.debug.xml
 *.mir
 
