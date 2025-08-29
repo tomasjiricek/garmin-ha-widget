@@ -5,12 +5,12 @@
 
 set -e
 
-echo "🔨 GARMIN HA WIDGET BUILD"
+echo "🔨 GARMIN HASSEQUENCE WIDGET BUILD"
 echo "========================="
 
 # Configuration
-WIDGET_NAME="garmin-ha-widget"
-OUTPUT_DIR="dist"
+WIDGET_NAME="garmin-hassequence-widget"
+OUTPUT_DIR="bin"
 DEVELOPER_KEY="developer_key.der"
 
 # Create output directory if it doesn't exist
@@ -51,13 +51,6 @@ if [ $? -eq 0 ]; then
     PACKAGE_SIZE=$(stat -c%s "$OUTPUT_DIR/$WIDGET_NAME.iq")
     echo "✅ Build completed successfully"
     echo "📦 Package: $WIDGET_NAME.iq (${PACKAGE_SIZE} bytes)"
-    
-    # Copy distribution files to dist directory
-    echo "📂 Preparing distribution package..."
-    cp README.md "$OUTPUT_DIR/"
-    cp PRIVACY-POLICY.md "$OUTPUT_DIR/"
-    cp resources/drawables/launcher_icon.png "$OUTPUT_DIR/"
-    
     echo "📦 Distribution package ready in $OUTPUT_DIR/"
 else
     echo "❌ Build failed!"
@@ -71,9 +64,11 @@ echo "=================="
 echo ""
 echo "📱 NEXT STEPS:"
 echo "1. 🧪 Run tests: ./test.sh"
-echo "2. 🖥️  Test in simulator: Use Connect IQ SDK"
-echo "3. 📱 Install on device: Copy dist/garmin-ha-widget.iq to watch"
-echo "4. 🏪 Upload to store: https://developer.garmin.com/connect-iq/publish/"
+echo "2. 🚚 Deploy: ./deploy.sh"
+echo "3. 🚀 Release: ./release.sh [--major|--minor|--patch]"
+echo "4. 🖥️  Test in simulator: Use Connect IQ SDK"
+echo "5. 📱 Install on device: Copy dist/garmin-hassequence-widget*.iq to watch"
+echo "6. 🏪 Upload to store: https://developer.garmin.com/connect-iq/publish/"
 echo ""
 echo "⚙️  CONFIGURATION REQUIRED:"
 echo "• Config URL: Your JSON configuration file URL"
@@ -84,4 +79,4 @@ echo "🔗 QUICK LINKS:"
 echo "• Example config: ./example-config.json"
 echo "• Config validation: python3 validate-config.py your-config.json"
 echo ""
-echo "✅ Ready for testing! 🎯"
+echo "✅ Ready for deployment! 🚀"
