@@ -302,7 +302,6 @@ class GarminHAWidgetMenuDelegate extends WatchUi.MenuInputDelegate {
 
     function onMenuItem(item) as Void {
         if (item == :clear_cache) {
-            popView();
             _view.clearCache();
             return;
         }
