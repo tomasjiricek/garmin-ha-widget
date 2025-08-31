@@ -27,24 +27,7 @@ class KeySequenceHandler {
 
     function handleKeyPress(key as Lang.String) as Lang.Array {
         if (_activeSequence == null) {
-            // Start new sequence - find all sequences that start with this key
-            _candidateSequences = [];
-
-            for (var i = 0; i < _sequences.size(); i++) {
-                var seq = _sequences[i] as Lang.Dictionary;
-                var sequence = seq["sequence"] as Lang.Array;
-                if (sequence.size() > 0 && sequence[0].equals(key)) {
-                    _candidateSequences.add(seq);
-                }
-            }
-
-            if (_candidateSequences.size() > 0) {
-                // Pick the shortest candidate as active
-                _activeSequence = findShortestCandidate();
-                _currentSequence = [key];
-                scheduleSequenceTimeout();
-                return _currentSequence;
-            }
+            return startNewSequence(key);
         } else {
             // Continue existing sequence
             var targetSequence = _activeSequence["sequence"] as Lang.Array;
@@ -72,11 +55,32 @@ class KeySequenceHandler {
                         return _currentSequence;
                     }
                 } else {
-                    // No alternatives match - reset and try starting new sequence
+                    // No alternatives match - reset and start new sequence
                     resetSequence();
-                    return handleKeyPress(key);
+                    return startNewSequence(key);
                 }
             }
+        }
+    }
+
+    private function startNewSequence(key as Lang.String) as Lang.Array {
+        // Start new sequence - find all sequences that start with this key
+        _candidateSequences = [];
+
+        for (var i = 0; i < _sequences.size(); i++) {
+            var seq = _sequences[i] as Lang.Dictionary;
+            var sequence = seq["sequence"] as Lang.Array;
+            if (sequence.size() > 0 && sequence[0].equals(key)) {
+                _candidateSequences.add(seq);
+            }
+        }
+
+        if (_candidateSequences.size() > 0) {
+            // Pick the shortest candidate as active
+            _activeSequence = findShortestCandidate();
+            _currentSequence = [key];
+            scheduleSequenceTimeout();
+            return _currentSequence;
         }
 
         return [];
