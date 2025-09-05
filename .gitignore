@@ -19,6 +19,9 @@ monkeyc.log
 */internal-mir/
 */external-mir/
 bin/
+dist/*.md
+dist/*.png
+
 *.prg
 *.debug.xml
 *.mir
