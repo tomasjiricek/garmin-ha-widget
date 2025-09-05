@@ -145,6 +145,11 @@ VERSIONED_IQ="$DIST_DIR/garmin-hassequence-widget-$NEW_VERSION.iq"
 mv "$IQ_PACKAGE" "$VERSIONED_IQ"
 echo "🏷️  Renamed IQ package: $IQ_PACKAGE → $VERSIONED_IQ"
 
+# Delete old IQ packages in dist
+echo "🧹 Cleaning up previous IQ packages in $DIST_DIR..."
+rm -f "$DIST_DIR/garmin-hassequence-widget-$LATEST_TAG.iq"
+echo "✅ Cleanup complete"
+
 # Update manifest version if needed
 if [ -z "$LATEST_TAG" ] || [ "$NEW_VERSION" != "$LATEST_TAG" ]; then
     # Update manifest.xml with new version (only in iq:application tag)
