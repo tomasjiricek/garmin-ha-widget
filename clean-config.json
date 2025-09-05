@@ -2,7 +2,6 @@
   "sequences": [
     {
       "id": "efficient_sequence",
-      "timeout": 1500,
       "sequence": ["UP", "OK"],
       "action": {
         "entity": "light.living_room",

@@ -24,7 +24,7 @@ class MockConnectIQEmulator:
     def load_configuration(self):
         """Simulate loading configuration from example file"""
         try:
-            with open('example-config.json', 'r') as f:
+            with open('../example-config.json', 'r') as f:
                 config = json.load(f)
 
             self.widget_state['sequences'] = config['sequences']
@@ -173,7 +173,7 @@ def main():
     print()
 
     # Check if package exists
-    iq_file = os.path.join('dist', 'garmin-ha-widget.iq')
+    iq_file = os.path.join('..', 'bin', 'garmin-hassequence-widget.iq')
     try:
         if not os.path.exists(iq_file):
             print("❌ Widget package not found. Please build the widget first.")

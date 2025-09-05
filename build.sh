@@ -45,7 +45,7 @@ fi
 
 # Build the widget in .iq format for Connect IQ Store
 echo "🛠️ Compiling widget..."
-monkeyc -e -o "$OUTPUT_DIR/$WIDGET_NAME.iq" -f monkey.jungle -y "$DEVELOPER_KEY"
+monkeyc -e -r -O 3 -o "$OUTPUT_DIR/$WIDGET_NAME.iq" -f monkey.jungle -y "$DEVELOPER_KEY"
 
 if [ $? -eq 0 ]; then
     PACKAGE_SIZE=$(stat -c%s "$OUTPUT_DIR/$WIDGET_NAME.iq")
@@ -77,6 +77,6 @@ echo "• HA Server URL: (optional - auto-derived from config URL)"
 echo ""
 echo "🔗 QUICK LINKS:"
 echo "• Example config: ./example-config.json"
-echo "• Config validation: python3 validate-config.py your-config.json"
+echo "• Config validation: python3 tests/validate-config.py your-config.json"
 echo ""
 echo "✅ Ready for deployment! 🚀"

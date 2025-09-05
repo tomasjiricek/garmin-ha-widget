@@ -7,13 +7,23 @@ Tests core functionality without requiring simulator
 import json
 import os
 
+def get_project_root():
+    """Get the project root directory"""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # If we're in tests/ directory, go up one level
+    if os.path.basename(script_dir) == 'tests':
+        return os.path.dirname(script_dir)
+    return script_dir
+
 def test_widget_functionality():
     """Test core widget functionality"""
     print("🚀 Garmin HASSequence - Functionality Test")
     print("=" * 45)
 
+    project_root = get_project_root()
+
     # Test 1: Package exists and has reasonable size
-    iq_file = "dist/garmin-ha-widget.iq"
+    iq_file = os.path.join(project_root, "bin", "garmin-hassequence-widget.iq")
     if os.path.exists(iq_file):
         size = os.path.getsize(iq_file)
         print(f"✅ Widget package: {size:,} bytes")
@@ -29,8 +39,8 @@ def test_widget_functionality():
 
     # Test 2: Settings files exist (device-specific)
     settings_files = [
-        "tests/test-fenix6-settings.json",
-        "tests/test-fenix7-settings.json",
+        os.path.join(project_root, "tests", "test-fenix6-settings.json"),
+        os.path.join(project_root, "tests", "test-fenix7-settings.json"),
     ]
 
     settings_found = False
@@ -50,7 +60,7 @@ def test_widget_functionality():
         print("⚠️  No settings files found, but not required for basic function")
 
     # Test 3: Configuration validation
-    config_file = "example-config.json"
+    config_file = os.path.join(project_root, "example-config.json")
     if os.path.exists(config_file):
         try:
             with open(config_file, 'r') as f:
@@ -82,12 +92,13 @@ def test_widget_functionality():
         print("❌ Example configuration not found")
 
     # Test 4: Device compatibility
-    device_files = [f for f in os.listdir('tests') if f.startswith('test-') and f.endswith('.json')]
+    tests_dir = os.path.join(project_root, 'tests')
+    device_files = [f for f in os.listdir(tests_dir) if f.startswith('test-') and f.endswith('.json')]
     if device_files:
         print(f"✅ Device compatibility: {len(device_files)} device configs")
         for device_file in sorted(device_files):
             device_name = device_file.replace('test-', '').replace('.json', '')
-            size = os.path.getsize(f"tests/{device_file}")
+            size = os.path.getsize(os.path.join(tests_dir, device_file))
             print(f"   ✅ {device_name}: {size:,} bytes")
     else:
         print("⚠️  No device-specific builds found")

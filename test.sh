@@ -9,10 +9,10 @@ echo "🧪 GARMIN HA WIDGET TESTS"
 echo "========================="
 
 # Check if widget package exists
-PACKAGE_FILE="dist/garmin-ha-widget.iq"
+PACKAGE_FILE="bin/garmin-hassequence-widget.iq"
 if [ ! -f "$PACKAGE_FILE" ]; then
     echo "❌ Package file not found: $PACKAGE_FILE"
-    echo "💡 Run ./build-and-test.sh first to build the widget"
+    echo "💡 Run ./build.sh first to build the widget"
     exit 1
 fi
 
@@ -21,7 +21,7 @@ echo ""
 
 # Test 1: Configuration validation
 echo "📋 Test 1: Configuration validation..."
-if python3 validate-config.py example-config.json --battery-tips; then
+if python3 tests/validate-config.py example-config.json --battery-tips; then
     echo "✅ Configuration validation: PASSED"
 else
     echo "❌ Configuration validation: FAILED"
@@ -32,7 +32,7 @@ echo ""
 
 # Test 2: Widget functionality tests
 echo "🚀 Test 2: Widget functionality..."
-if python3 test-functionality.py; then
+if python3 tests/test-functionality.py; then
     echo "✅ Widget functionality: PASSED"
 else
     echo "❌ Widget functionality: FAILED"
@@ -43,7 +43,7 @@ echo ""
 
 # Test 3: Widget core tests
 echo "🧪 Test 3: Widget core tests..."
-if python3 test-widget.py; then
+if python3 tests/test-widget.py; then
     echo "✅ Widget core tests: PASSED"
 else
     echo "❌ Widget core tests: FAILED"
@@ -54,7 +54,7 @@ echo ""
 
 # Test 4: Battery configuration test
 echo "🔋 Test 4: Battery configuration..."
-if python3 test-widget.py tests/test-battery-config.json > /dev/null 2>&1; then
+if python3 tests/test-widget.py tests/test-battery-config.json > /dev/null 2>&1; then
     echo "✅ Battery configuration: PASSED"
 else
     echo "❌ Battery configuration: FAILED"
@@ -69,7 +69,7 @@ echo "==============="
 echo "✅ Configuration validation: PASSED"
 echo "✅ Widget functionality: PASSED"
 echo "✅ Widget core tests: PASSED"
-echo "✅ Battery configuration: $(python3 test-widget.py tests/test-battery-config.json > /dev/null 2>&1 && echo "PASSED" || echo "FAILED")"
+echo "✅ Battery configuration: $(python3 tests/test-widget.py tests/test-battery-config.json > /dev/null 2>&1 && echo "PASSED" || echo "FAILED")"
 echo ""
 echo "🎉 ALL TESTS COMPLETED!"
 echo ""

@@ -8,7 +8,7 @@ import json
 import time
 
 class KeySequenceSimulator:
-    def __init__(self, config_file='example-config.json'):
+    def __init__(self, config_file='../example-config.json'):
         with open(config_file, 'r') as f:
             self.config = json.load(f)
 

@@ -2,7 +2,6 @@
   "sequences": [
     {
       "id": "lights_toggle",
-      "timeout": 2000,
       "sequence": ["UP", "DOWN", "OK"],
       "action": {
         "entity": "light.living_room",
@@ -11,7 +10,6 @@
     },
     {
       "id": "lock_doors",
-      "timeout": 3000,
       "sequence": ["LIGHT", "LIGHT", "OK"],
       "action": {
         "entity": "script.lock_all_doors",
@@ -20,7 +18,6 @@
     },
     {
       "id": "garage_door",
-      "timeout": 2500,
       "sequence": ["UP", "UP", "DOWN", "OK"],
       "action": {
         "entity": "cover.garage_door",
@@ -29,7 +26,6 @@
     },
     {
       "id": "goodnight_scene",
-      "timeout": 4000,
       "sequence": ["MENU", "DOWN", "OK"],
       "action": {
         "entity": "scene.goodnight",
@@ -38,7 +34,6 @@
     },
     {
       "id": "emergency_lights",
-      "timeout": 1500,
       "sequence": ["LIGHT", "LIGHT"],
       "action": {
         "entity": "script.emergency_lighting",
@@ -47,7 +42,6 @@
     },
     {
       "id": "quick_toggle",
-      "timeout": 1500,
       "sequence": ["OK", "OK"],
       "action": {
         "entity": "switch.living_room_fan",

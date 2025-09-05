@@ -1,4 +1,3 @@
-import Toybox.Communications;
 import Toybox.Lang;
 import Toybox.Application;
 
@@ -8,12 +7,16 @@ class HomeAssistantClient {
     private var _statusCallback as Lang.Method?;
     private var _isRequestInProgress as Lang.Boolean;
     private var _requestQueue as Lang.Array;
+    private var _communicationProvider as CommunicationProvider;
 
     function initialize() {
         _configManager = new ConfigManager();
         _configManager.loadSettings();
         _isRequestInProgress = false;
         _requestQueue = [];
+
+        // Use CommunicationProviderManager to get the configured provider
+        _communicationProvider = CommunicationProviderManager.getConfiguredProvider();
     }
 
     function sendAction(action as Lang.Dictionary, callback as Lang.Method, statusCallback as Lang.Method?) as Void {
@@ -27,6 +30,16 @@ class HomeAssistantClient {
         if (!_isRequestInProgress) {
             _processNextRequest();
         }
+    }
+
+    // Method to switch communication provider at runtime
+    function setCommunicationProvider(provider as CommunicationProvider) as Void {
+        _communicationProvider = provider;
+    }
+
+    // Get current communication provider type
+    function getCommunicationProviderType() as Lang.String {
+        return _communicationProvider.getProviderType();
     }
 
     function _executeAction(action as Lang.Dictionary, callback as Lang.Method, statusCallback as Lang.Method) as Void {
@@ -61,50 +74,11 @@ class HomeAssistantClient {
             return;
         }
 
-        var entity = action["entity"] as Lang.String;
-        var actionType = action["action"] as Lang.String;
-
-        // Parse action type (e.g., "script.turn_on" -> domain: "script", service: "turn_on")
-        var dotIndex = actionType.find(".");
-        if (dotIndex == null) {
-            _isRequestInProgress = false;
-            if (_callback != null) {
-                var callbackMethod = _callback;
-                _callback = null;
-                _statusCallback = null;
-                callbackMethod.invoke(false);
-            }
-            _processNextRequest();
-            return;
-        }
-
-        var domain = actionType.substring(0, dotIndex);
-        var service = actionType.substring(dotIndex + 1, actionType.length());
-
-        var url = haUrl + "/api/services/" + domain + "/" + service;
-
-        var payload = {
-            "entity_id" => entity
-        };
-
-        var options = {
-            :method => Communications.HTTP_REQUEST_METHOD_POST,
-            :headers => {
-                "Content-Type" => Communications.REQUEST_CONTENT_TYPE_JSON,
-                "Authorization" => "Bearer " + apiKey,
-                "Connection" => "close", // Close connection quickly to save battery
-                "User-Agent" => "GarminHAWidget/1.0" // Identify requests for potential server optimizations
-            },
-            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON,
-            :timeout => 5 // 5 second timeout for battery optimization
-        };
-
-        _statusCallback.invoke("Sending...");
-        Communications.makeWebRequest(url, payload, options, method(:onActionResponse));
+        // Use the communication provider to send the action
+        _communicationProvider.sendAction(action, haUrl, apiKey, _statusCallback, method(:onActionResponse));
     }
 
-    function onActionResponse(responseCode as Lang.Number, data as Lang.Dictionary?) as Void {
-        var success = (responseCode >= 200 && responseCode < 300);
+    function onActionResponse(success as Lang.Boolean) as Void {
         _isRequestInProgress = false;
 
         if (_callback != null) {

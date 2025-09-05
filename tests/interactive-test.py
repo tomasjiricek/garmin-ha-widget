@@ -22,7 +22,7 @@ class GarminWidgetTester:
     def load_configuration(self):
         """Load and validate configuration"""
         try:
-            with open('example-config.json', 'r') as f:
+            with open('../example-config.json', 'r') as f:
                 config = json.load(f)
 
             self.widget_state['sequences'] = config['sequences']
@@ -185,8 +185,8 @@ class GarminWidgetTester:
         print("=" * 50)
 
         # Check widget package
-        if os.path.exists('garmin-ha-widget.iq'):
-            size = os.path.getsize('garmin-ha-widget.iq')
+        if os.path.exists('../bin/garmin-hassequence-widget.iq'):
+            size = os.path.getsize('../bin/garmin-hassequence-widget.iq')
             print(f"📦 Widget package: {size:,} bytes")
         else:
             print("❌ Widget package not found!")

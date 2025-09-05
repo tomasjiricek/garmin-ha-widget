@@ -72,10 +72,10 @@ def generate_sequence_examples():
     print("  • Uses simple text layout matching Garmin widget standards")
     print("  • No battery indicators or decorative elements")
 
-    print("\n📋 CONFIGURED SEQUENCES (from example-config.json):")
+    print("\n📋 CONFIGURED SEQUENCES (from ../example-config.json):")
     try:
         import json
-        with open('example-config.json', 'r') as f:
+        with open('../example-config.json', 'r') as f:
             config = json.load(f)
 
         for i, seq in enumerate(config['sequences'], 1):
@@ -86,7 +86,7 @@ def generate_sequence_examples():
             print(f"  {i}. {seq['id']}: {keys} → {action} ({entity})")
 
     except FileNotFoundError:
-        print("  (example-config.json not found)")
+        print("  (../example-config.json not found)")
 
     print("\n✅ Widget accurately represents the actual Garmin implementation!")
 

@@ -8,12 +8,22 @@ import json
 import sys
 import os
 
+def get_project_root():
+    """Get the project root directory"""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # If we're in tests/ directory, go up one level
+    if os.path.basename(script_dir) == 'tests':
+        return os.path.dirname(script_dir)
+    return script_dir
+
 def test_configuration_parsing():
     """Test configuration file parsing"""
     print("🧪 Testing configuration parsing...")
 
+    project_root = get_project_root()
+
     try:
-        with open('example-config.json', 'r') as f:
+        with open(os.path.join(project_root, 'example-config.json'), 'r') as f:
             config = json.load(f)
 
         # Check required fields
@@ -66,13 +76,15 @@ def test_configuration_parsing():
         return False
 
 def test_build_artifacts():
-    """Test that all required build artifacts exist"""
+    """Test that build artifacts exist and are valid"""
     print("🧪 Testing build artifacts...")
 
+    project_root = get_project_root()
+
     required_files = [
-        'dist/garmin-ha-widget.iq',
-        'resources/drawables/launcher_icon.png',
-        'manifest.xml'
+        os.path.join(project_root, 'bin', 'garmin-hassequence-widget.iq'),
+        os.path.join(project_root, 'resources', 'drawables', 'launcher_icon.png'),
+        os.path.join(project_root, 'manifest.xml')
     ]
 
     missing_files = []
@@ -85,7 +97,7 @@ def test_build_artifacts():
         return False
 
     # Check file sizes
-    iq_size = os.path.getsize('dist/garmin-ha-widget.iq')
+    iq_size = os.path.getsize(os.path.join(project_root, 'bin', 'garmin-hassequence-widget.iq'))
     if iq_size < 1000:  # Should be at least 1KB
         print(f"❌ Widget package too small: {iq_size} bytes")
         return False

@@ -45,7 +45,7 @@ The widget implements practical battery-saving features:
 
 2. **Validate your config** (with battery tips):
    ```bash
-   python3 validate-config.py your-config.json --battery-tips
+   python3 tests/validate-config.py your-config.json --battery-tips
    ```
 
 3. **Test the widget** (optional):
@@ -149,7 +149,7 @@ The widget implements practical battery-saving features:
 
 - **`build.sh`** - Build the widget package
 - **`test.sh`** - Run comprehensive tests and validation
-- **`validate-config.py`** - Configuration validator with battery tips
+- **`tests/validate-config.py`** - Configuration validator with battery tips
 - **`STORE-SUBMISSION.md`** - Connect IQ Store submission guide
 
 ## 📊 Battery Performance

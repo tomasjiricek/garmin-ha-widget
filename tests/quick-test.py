@@ -9,7 +9,7 @@ def main():
     print("=" * 40)
 
     # 1. Check package exists
-    iq_file = "dist/garmin-ha-widget.iq"
+    iq_file = "../bin/garmin-hassequence-widget.iq"
     if os.path.exists(iq_file):
         size = os.path.getsize(iq_file)
         print(f"✅ Package: {size:,} bytes")
@@ -19,7 +19,7 @@ def main():
 
     # 2. Check configuration
     try:
-        with open("example-config.json") as f:
+        with open("../example-config.json") as f:
             config = json.load(f)
         print(f"✅ Config: {len(config['sequences'])} sequences")
     except Exception as e:
@@ -49,7 +49,7 @@ def main():
     print("   ✅ Ready for Connect IQ Store!")
 
     print("\n📱 To test manually:")
-    print("   1. Copy dist/garmin-ha-widget.iq to your watch")
+    print("   1. Copy ../bin/garmin-hassequence-widget.iq to your watch")
     print("   2. Configure in Garmin Connect IQ app")
     print("   3. Try key sequences on your watch")
 
