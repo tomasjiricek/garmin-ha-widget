@@ -5,16 +5,16 @@ import Toybox.Timer;
 class KeySequenceHandler {
     private var _sequences as Lang.Array;
     private var _currentSequence as Lang.Array;
-    private var _currentSequenceIndex as Lang.Number;
-    private var _activeSequenceConfig as Lang.Dictionary?;
+    private var _candidateSequences as Lang.Array; // All sequences that start with initial key
+    private var _activeSequence as Lang.Dictionary?;
     private var _sequenceCallback as Lang.Method?;
     private var _timeoutTimer as Timer.Timer?;
 
     function initialize() {
         _sequences = [];
         _currentSequence = [];
-        _currentSequenceIndex = 0;
-        _activeSequenceConfig = null;
+        _candidateSequences = [];
+        _activeSequence = null;
     }
 
     function setSequences(sequences as Lang.Array) as Void {
@@ -26,59 +26,135 @@ class KeySequenceHandler {
     }
 
     function handleKeyPress(key as Lang.String) as Lang.Array {
-        // If no active sequence, check if this key starts any sequence
-        if (_activeSequenceConfig == null) {
-            for (var i = 0; i < _sequences.size(); i++) {
-                var seq = _sequences[i] as Lang.Dictionary;
-                var sequence = seq["sequence"] as Lang.Array;
-                if (sequence.size() > 0 && sequence[0].equals(key)) {
-                    _activeSequenceConfig = seq;
-                    _currentSequence = [key];
-                    _currentSequenceIndex = 1;
-                    scheduleSequenceTimeout();
-                    return _currentSequence;
-                }
-            }
+        if (_activeSequence == null) {
+            return startNewSequence(key);
         } else {
-            // Continue with active sequence
-            var targetSequence = _activeSequenceConfig["sequence"] as Lang.Array;
+            // Continue existing sequence
+            var targetSequence = _activeSequence["sequence"] as Lang.Array;
 
-            if (_currentSequenceIndex < targetSequence.size() &&
-                targetSequence[_currentSequenceIndex].equals(key)) {
-                // Correct key in sequence
-                _currentSequence.add(key);
-                _currentSequenceIndex++;
+            if (_currentSequence.size() < targetSequence.size() &&
+                targetSequence[_currentSequence.size()].equals(key)) {
 
-                // Check if sequence is complete
-                if (_currentSequenceIndex >= targetSequence.size()) {
-                    var sequenceId = _activeSequenceConfig["id"] as Lang.String;
-                    var action = _activeSequenceConfig["action"] as Lang.Dictionary;
-
-                    resetSequence();
-
-                    if (_sequenceCallback != null) {
-                        _sequenceCallback.invoke(sequenceId, action);
-                    }
-
-                    return [];
-                } else {
-                    scheduleSequenceTimeout();
-                    return _currentSequence;
-                }
+                // Correct key - continue with current sequence
+                return continueSequence(key);
             } else {
-                // Wrong key, reset and check if this key starts a new sequence
-                resetSequence();
-                return handleKeyPress(key);
+                // Wrong key - check if any other candidate sequences match
+                var alternativeSequence = findMatchingCandidate(key);
+
+                if (alternativeSequence != null) {
+                    // Switch to the alternative sequence
+                    _activeSequence = alternativeSequence;
+                    _currentSequence.add(key);
+
+                    // Check if the alternative sequence is now complete
+                    if (_currentSequence.size() >= _activeSequence["sequence"].size()) {
+                        completeSequence();
+                        return [];
+                    } else {
+                        scheduleSequenceTimeout();
+                        return _currentSequence;
+                    }
+                } else {
+                    // No alternatives match - reset and start new sequence
+                    resetSequence();
+                    return startNewSequence(key);
+                }
             }
+        }
+    }
+
+    private function startNewSequence(key as Lang.String) as Lang.Array {
+        // Start new sequence - find all sequences that start with this key
+        _candidateSequences = [];
+
+        for (var i = 0; i < _sequences.size(); i++) {
+            var seq = _sequences[i] as Lang.Dictionary;
+            var sequence = seq["sequence"] as Lang.Array;
+            if (sequence.size() > 0 && sequence[0].equals(key)) {
+                _candidateSequences.add(seq);
+            }
+        }
+
+        if (_candidateSequences.size() > 0) {
+            // Pick the shortest candidate as active
+            _activeSequence = findShortestCandidate();
+            _currentSequence = [key];
+            scheduleSequenceTimeout();
+            return _currentSequence;
         }
 
         return [];
     }
 
+    private function continueSequence(key as Lang.String) as Lang.Array {
+        _currentSequence.add(key);
+
+        // Check if sequence is complete
+        if (_currentSequence.size() >= _activeSequence["sequence"].size()) {
+            completeSequence();
+            return [];
+        } else {
+            scheduleSequenceTimeout();
+            return _currentSequence;
+        }
+    }
+
+    private function completeSequence() as Void {
+        var sequenceId = _activeSequence["id"] as Lang.String;
+        var action = _activeSequence["action"] as Lang.Dictionary;
+
+        resetSequence();
+
+        if (_sequenceCallback != null) {
+            _sequenceCallback.invoke(sequenceId, action);
+        }
+    }
+
+    private function findShortestCandidate() as Lang.Dictionary? {
+        if (_candidateSequences.size() == 0) {
+            return null;
+        }
+
+        var shortest = _candidateSequences[0] as Lang.Dictionary;
+        var shortestLength = shortest["sequence"].size();
+
+        for (var i = 1; i < _candidateSequences.size(); i++) {
+            var candidate = _candidateSequences[i] as Lang.Dictionary;
+            var candidateLength = candidate["sequence"].size();
+
+            if (candidateLength < shortestLength) {
+                shortest = candidate;
+                shortestLength = candidateLength;
+            }
+        }
+
+        return shortest;
+    }
+
+    private function findMatchingCandidate(key as Lang.String) as Lang.Dictionary? {
+        for (var i = 0; i < _candidateSequences.size(); i++) {
+            var candidate = _candidateSequences[i] as Lang.Dictionary;
+            var sequence = candidate["sequence"] as Lang.Array;
+
+            // Skip the currently active sequence
+            if (candidate == _activeSequence) {
+                continue;
+            }
+
+            // Check if this candidate matches at the current position
+            if (_currentSequence.size() < sequence.size() &&
+                sequence[_currentSequence.size()].equals(key)) {
+                return candidate;
+            }
+        }
+
+        return null;
+    }
+
     function resetSequence() as Void {
-        _activeSequenceConfig = null;
+        _activeSequence = null;
         _currentSequence = [];
-        _currentSequenceIndex = 0;
+        _candidateSequences = [];
 
         // Battery optimization: Stop timer immediately when sequence resets
         if (_timeoutTimer != null) {
@@ -97,7 +173,7 @@ class KeySequenceHandler {
             _timeoutTimer = null;
         }
 
-        if (_activeSequenceConfig != null) {
+        if (_activeSequence != null) {
             _timeoutTimer = new Timer.Timer();
             _timeoutTimer.start(method(:resetSequence), 5000, false);
         }
