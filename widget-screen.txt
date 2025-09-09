@@ -1,49 +1,35 @@
 🎯 GARMIN HOME ASSISTANT WIDGET - ACCURATE SCREEN MOCKUP
 ===========================================================
 
-📱 WIDGET DISPLAY (240x240px typical Garmin screen):
-
-┌────────────────────────────────────────────────┐
-│                                                │
-│                  HASSequence                   │
-│                                                │
-│                                                │
-│                                                │
-│                                                │
-│                     Ready                      │
-│                                                │
-│                                                │
-│                                                │
-│                                                │
-│                                                │
-│                                                │
-│                                                │
-└────────────────────────────────────────────────┘
-
 🔄 WIDGET STATE PROGRESSION:
 
 1. READY STATE:
    ┌─────────────────┐
-   │     Ready       │
+   │   HASSequence   │
+   │                 │
+   │      Ready      │
    │                 │
    └─────────────────┘
 
 2. SEQUENCE INPUT:
    ┌─────────────────┐
-   │     Ready       │
-   │    UP-DOWN      │
+   │   HASSequence   │
+   │                 │
+   │                 │
+   │     UP-DOWN     │
    └─────────────────┘
 
 3. ACTION COMPLETED:
    ┌─────────────────┐
-   │  Action sent    │
+   │                 │
+   │   Action sent   │
    │                 │
    └─────────────────┘
 
 4. CONFIGURATION ERROR:
    ┌─────────────────┐
    │     Error:      │
-   │ Config empty    │
+   │  Config empty   │
    │   or invalid    │
    └─────────────────┘
 
