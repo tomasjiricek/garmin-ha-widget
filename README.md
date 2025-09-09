@@ -74,3 +74,39 @@ Fenix 5/6/7 series watches
 - Garmin Connect IQ SDK
 - OpenSSL (for developer key generation)
 - Git (for release management)
+
+### Development Workflow
+
+This project uses Git Flow branching strategy:
+
+- **`develop`** - Default branch for ongoing development
+- **`release/x.x.x`** - Release branches created from develop
+- **`master`** - Production/stable branch (updated via PR from release branches)
+
+**Release Process:**
+1. Develop features on `develop` branch
+2. Run `./release.sh --patch` (or --minor/--major) from `develop`
+3. Script creates `release/x.x.x` branch and PR to `master`
+4. Review and merge PR to `master` (production branch)
+5. Upload to Connect IQ Store
+
+```
+┌─────────────┐
+│   develop   │ ←── feature branches
+│ (default)   │
+└─────────────┘
+       │
+       ▼ create release
+┌─────────────────┐
+│ release/x.x.x   │
+│ (from develop)  │
+└─────────────────┘
+       │
+       ▼ PR
+┌─────────────┐
+│   master    │
+│ (production)│
+└─────────────┘
+```
+
+**Important:** Always run `./release.sh` from the `develop` branch. The script will validate this and exit with helpful error messages if you're on the wrong branch.
