@@ -18,6 +18,23 @@ mkdir -p "$DIST_DIR"
 
 echo "📦 Preparing distribution package..."
 
+# Ensure we're on develop branch
+CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+if [ "$CURRENT_BRANCH" != "develop" ]; then
+    echo "❌ You must be on the 'develop' branch to deploy"
+    echo "   Current branch: $CURRENT_BRANCH"
+    echo "   Expected branch: develop"
+    echo ""
+    echo "   To switch to develop branch:"
+    echo "   git checkout develop"
+    echo ""
+    echo "   To see all branches:"
+    echo "   git branch -a"
+    exit 1
+fi
+
+echo "✅ On develop branch - ready to deploy"
+
 # Check if source IQ file exists
 if [ ! -f "$SOURCE_IQ" ]; then
     echo "❌ Source IQ file not found: $SOURCE_IQ"
