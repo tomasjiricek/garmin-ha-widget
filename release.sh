@@ -2,6 +2,24 @@
 
 # Garmin Connect IQ Widget Release Script
 # Creates a new release with proper versioning and git management
+#
+# Git Flow Workflow:
+# ┌─────────────┐
+# │   develop   │ ←── feature branches
+# │ (default)   │
+# └─────────────┘
+#        │
+#        ▼ create release
+# ┌─────────────────┐
+# │ release/x.x.x   │
+# │ (from develop)  │
+# └─────────────────┘
+#        │
+#        ▼ PR
+# ┌─────────────┐
+# │   master    │
+# │ (production)│
+# └─────────────┘
 
 set -e
 
@@ -87,6 +105,22 @@ file_changed_since_tag() {
     fi
 }
 
+# Function to check if there are any changes since last tag (excluding dist/)
+has_code_changes_since_tag() {
+    local latest_tag=$(get_latest_tag)
+
+    if [ -z "$latest_tag" ]; then
+        return 0  # No previous tag, consider as having changes
+    fi
+
+    # Check if there are any differences excluding dist/ folder
+    if git diff --quiet "$latest_tag" -- . ':!dist/'; then
+        return 1  # No changes outside dist/
+    else
+        return 0  # Changes found outside dist/
+    fi
+}
+
 # Check if IQ package exists
 if [ ! -f "$IQ_PACKAGE" ]; then
     echo "❌ IQ package not found: $IQ_PACKAGE"
@@ -97,11 +131,26 @@ fi
 # Check if IQ package has changed since last version
 if ! file_changed_since_tag "$IQ_PACKAGE"; then
     echo "❌ IQ package in dist/ is the same as the previous version"
-    echo "   Did you forget to run ./deploy.sh after making changes?"
+    echo "   This usually means you forgot to run ./deploy.sh after making changes"
+    echo "   Or the package hasn't been rebuilt with your latest changes"
     exit 1
 fi
 
 echo "✅ IQ package is newer than previous version"
+
+# Check if there are any code changes since last version (excluding dist/)
+if ! has_code_changes_since_tag; then
+    echo "❌ No code changes found since last version"
+    echo "   All files (excluding dist/) are identical to the previous version"
+    echo "   This means changes exist ONLY in dist/ folder"
+    echo "   Please make sure you have committed your source code changes before creating a release"
+    echo ""
+    echo "   To see what changed since last tag:"
+    echo "   git diff --stat $(get_latest_tag) -- . ':!dist/'"
+    exit 1
+fi
+
+echo "✅ Code changes detected outside dist/ folder"
 
 # Check for uncommitted changes (excluding dist folder)
 if git status --porcelain --ignore-submodules | grep -v "^?? $DIST_DIR/" | grep -q .; then
@@ -114,6 +163,23 @@ if git status --porcelain --ignore-submodules | grep -v "^?? $DIST_DIR/" | grep 
 fi
 
 echo "✅ No uncommitted changes (excluding dist/)"
+
+# Ensure we're on develop branch
+CURRENT_BRANCH=$(git branch --show-current)
+if [ "$CURRENT_BRANCH" != "develop" ]; then
+    echo "❌ You must be on the 'develop' branch to create a release"
+    echo "   Current branch: $CURRENT_BRANCH"
+    echo "   Expected branch: develop"
+    echo ""
+    echo "   To switch to develop branch:"
+    echo "   git checkout develop"
+    echo ""
+    echo "   To see all branches:"
+    echo "   git branch -a"
+    exit 1
+fi
+
+echo "✅ On develop branch - ready to create release"
 
 # Determine new version
 LATEST_TAG=$(get_latest_tag)
