@@ -144,7 +144,19 @@ class KeySequenceHandler {
             // Check if this candidate matches at the current position
             if (_currentSequence.size() < sequence.size() &&
                 sequence[_currentSequence.size()].equals(key)) {
-                return candidate;
+
+                // Also verify that all previous keys match this candidate
+                var allPreviousMatch = true;
+                for (var j = 0; j < _currentSequence.size(); j++) {
+                    if (!_currentSequence[j].equals(sequence[j])) {
+                        allPreviousMatch = false;
+                        break;
+                    }
+                }
+
+                if (allPreviousMatch) {
+                    return candidate;
+                }
             }
         }
 
