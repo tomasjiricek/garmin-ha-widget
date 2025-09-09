@@ -64,6 +64,6 @@
   • Clean, minimal interface design
 
 📦 PACKAGE DETAILS:
-  • File: garmin-ha-widget.iq (629KB)
+  • File: garmin-hassequence-widget.iq (629KB)
   • Devices: Fenix 5/6/7 Series
   • Format: Connect IQ Store ready
